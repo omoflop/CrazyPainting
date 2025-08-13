@@ -11,7 +11,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.PersistentState;
-import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.PersistentStateType;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,12 +29,50 @@ public class CanvasManager extends PersistentState {
             Codec.INT.fieldOf("next_id").forGetter((self) -> self.nextId)
     ).apply(builder, CanvasManager::new));
 
+    private static final String OLD_ID = "crazypainting:canvas_manager";
+    private static final String ID = "crazypainting_canvas_manager";
+
     public static final HashMap<UUID, ChangeRecord> CHANGE_IDS = new HashMap<>();
 
     private int nextId;
 
     public CanvasManager(int nextId) {
         this.nextId = nextId;
+    }
+
+    public static CanvasManager createNew() {
+        return new CanvasManager(-1);
+    }
+
+    public int getNextId() {
+        nextId += 1;
+        return nextId;
+    }
+
+    public static CanvasManager getServerState(MinecraftServer server) {
+        PersistentStateType<CanvasManager> type = new PersistentStateType<>(ID, CanvasManager::createNew, CODEC, null);
+
+        // Migrate old CanvasManager dat file
+        {
+            Path dataDir = server.getSavePath(WorldSavePath.ROOT).resolve("data");
+            File oldFile = new File(dataDir.toFile(), OLD_ID + ".dat"); // Need to use lenient java.io.File API for potentially illegal names
+            Path newFile = dataDir.resolve(ID + ".dat");
+
+            if (oldFile.exists() && !Files.exists(newFile)) {
+                CrazyPainting.LOGGER.info("Found old CanvasManager dat file, attempting to migrate");
+                try {
+                    Files.move(oldFile.toPath(), newFile);
+                    CrazyPainting.LOGGER.info("Successfully migrated CanvasManager dat to new filename");
+                } catch (IOException e) {
+                    CrazyPainting.LOGGER.error("Failed to migrate CanvasManager dat file, sticking with old one", e);
+                    type = new PersistentStateType<>(OLD_ID, CanvasManager::createNew, CODEC, null);
+                }
+            }
+        }
+
+        CanvasManager canvasManager = Objects.requireNonNull(server.getWorld(World.OVERWORLD)).getPersistentStateManager().getOrCreate(type);
+        canvasManager.markDirty();
+        return canvasManager;
     }
 
     public static PaintingData createOrLoad(int canvasId, PaintingSize size, MinecraftServer server) throws IOException {
@@ -91,23 +129,7 @@ public class CanvasManager extends PersistentState {
             if (player.equals(sender)) continue;
             ServerPlayNetworking.send(player, new PaintingCanUpdateS2C(data.id().value()));
         }
-        System.out.println("Sent out can update packet to all players except One");
+        CrazyPainting.debug("Sent out an update packet to all players except one");
     }
 
-    public int getNextId() {
-        nextId += 1;
-        return nextId;
-    }
-
-    public static CanvasManager createNew() {
-        return new CanvasManager(-1);
-    }
-
-    public static CanvasManager getServerState(MinecraftServer server) {
-        PersistentStateManager manager = Objects.requireNonNull(server.getWorld(World.OVERWORLD)).getPersistentStateManager();
-        PersistentStateType<CanvasManager> type = new PersistentStateType<>("crazypainting:canvas_manager", CanvasManager::createNew, CODEC, null);
-        CanvasManager canvasManager = manager.getOrCreate(type);
-        canvasManager.markDirty();
-        return canvasManager;
-    }
 }

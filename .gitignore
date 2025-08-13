@@ -1,5 +1,6 @@
 # User-specific stuff
 .idea/
+.vscode/
 
 *.iml
 *.ipr
@@ -102,6 +103,8 @@ $RECYCLE.BIN/
 
 .gradle
 build/
+bin/
+remappedSrc/
 
 # Ignore Gradle GUI config
 gradle-app.setting
