@@ -3,7 +3,7 @@ package com.github.omoflop.crazypainting.network.c2s.handlers;
 import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.components.CanvasDataComponent;
 import com.github.omoflop.crazypainting.content.CrazyComponents;
-import com.github.omoflop.crazypainting.entities.EaselEntity;
+import com.github.omoflop.crazypainting.entities.CanvasEaselEntity;
 import com.github.omoflop.crazypainting.network.c2s.SignPaintingC2S;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
@@ -16,7 +16,7 @@ public class SignPaintingServerHandler implements ServerPlayNetworking.PlayPaylo
         ServerPlayerEntity player = ctx.player();
 
         Entity entity = player.getWorld().getEntityById(packet.easelEntityId());
-        if (!(entity instanceof EaselEntity easel)) {
+        if (!(entity instanceof CanvasEaselEntity easel)) {
             if (CrazyPainting.SHOW_DEBUG_LOGS) CrazyPainting.LOGGER.warn("Received invalid entity id for sign painting packet");
             return;
         }

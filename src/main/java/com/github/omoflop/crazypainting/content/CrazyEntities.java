@@ -2,7 +2,7 @@ package com.github.omoflop.crazypainting.content;
 
 import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.entities.CanvasEntity;
-import com.github.omoflop.crazypainting.entities.EaselEntity;
+import com.github.omoflop.crazypainting.entities.CanvasEaselEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -14,10 +14,10 @@ public class CrazyEntities {
     public static final RegistryKey<EntityType<?>> EASEL_ENTITY_REGISTRY_KEY = RegistryKey.of(Registries.ENTITY_TYPE.getKey(), CrazyPainting.id("easel"));
     public static final RegistryKey<EntityType<?>> CANVAS_ENTITY_REGISTRY_KEY = RegistryKey.of(Registries.ENTITY_TYPE.getKey(), CrazyPainting.id("canvas"));
 
-    public static final EntityType<EaselEntity> EASEL_ENTITY_TYPE = Registry.register(
+    public static final EntityType<CanvasEaselEntity> EASEL_ENTITY_TYPE = Registry.register(
             Registries.ENTITY_TYPE,
             CrazyPainting.id("easel"),
-            EntityType.Builder.create(EaselEntity::new, SpawnGroup.MISC).dimensions(0.75f, 1.95f).build(EASEL_ENTITY_REGISTRY_KEY)
+            EntityType.Builder.create(CanvasEaselEntity::new, SpawnGroup.MISC).dimensions(0.75f, 1.95f).build(EASEL_ENTITY_REGISTRY_KEY)
     );
     public static final EntityType<CanvasEntity> CANVAS_ENTITY_TYPE = Registry.register(
             Registries.ENTITY_TYPE,
@@ -26,6 +26,6 @@ public class CrazyEntities {
     );
 
     public static void register() {
-        FabricDefaultAttributeRegistry.register(EASEL_ENTITY_TYPE, EaselEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(EASEL_ENTITY_TYPE, CanvasEaselEntity.createAttributes());
     }
 }

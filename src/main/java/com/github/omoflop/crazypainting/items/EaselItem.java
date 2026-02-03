@@ -3,7 +3,7 @@ package com.github.omoflop.crazypainting.items;
 import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.Identifiable;
 import com.github.omoflop.crazypainting.content.CrazyEntities;
-import com.github.omoflop.crazypainting.entities.EaselEntity;
+import com.github.omoflop.crazypainting.entities.CanvasEaselEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.item.Item;
@@ -13,7 +13,6 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
@@ -43,8 +42,8 @@ public class EaselItem extends Item implements Identifiable {
             Box box = CrazyEntities.EASEL_ENTITY_TYPE.getDimensions().getBoxAt(vec3d.getX(), vec3d.getY(), vec3d.getZ());
             if (world.isSpaceEmpty(null, box) && world.getOtherEntities(null, box).isEmpty()) {
                 if (world instanceof ServerWorld serverWorld) {
-                    Consumer<EaselEntity> consumer = EntityType.copier(serverWorld, itemStack, context.getPlayer());
-                    EaselEntity easel = CrazyEntities.EASEL_ENTITY_TYPE.create(serverWorld, consumer, blockPos, SpawnReason.SPAWN_ITEM_USE, true, true);
+                    Consumer<CanvasEaselEntity> consumer = EntityType.copier(serverWorld, itemStack, context.getPlayer());
+                    CanvasEaselEntity easel = CrazyEntities.EASEL_ENTITY_TYPE.create(serverWorld, consumer, blockPos, SpawnReason.SPAWN_ITEM_USE, true, true);
                     if (easel == null) {
                         return ActionResult.FAIL;
                     }

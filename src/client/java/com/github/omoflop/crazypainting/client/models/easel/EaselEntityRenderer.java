@@ -3,20 +3,18 @@ package com.github.omoflop.crazypainting.client.models.easel;
 import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.client.CrazyPaintingClient;
 import com.github.omoflop.crazypainting.client.models.CanvasFeatureRenderer;
-import com.github.omoflop.crazypainting.entities.EaselEntity;
+import com.github.omoflop.crazypainting.entities.CanvasEaselEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemDisplayContext;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
-public class EaselEntityRenderer extends LivingEntityRenderer<EaselEntity, EaselEntityRenderState, EaselEntityModel> {
+public class EaselEntityRenderer extends LivingEntityRenderer<CanvasEaselEntity, EaselEntityRenderState, EaselEntityModel> {
     private static final Identifier textureId = CrazyPainting.id("textures/entity/easel/wood.png");
 
     public EaselEntityRenderer(EntityRendererFactory.Context context) {
@@ -31,7 +29,7 @@ public class EaselEntityRenderer extends LivingEntityRenderer<EaselEntity, Easel
     }
 
     @Override
-    public void updateRenderState(EaselEntity entity, EaselEntityRenderState state, float tickProgress) {
+    public void updateRenderState(CanvasEaselEntity entity, EaselEntityRenderState state, float tickProgress) {
         super.updateRenderState(entity, state, tickProgress);
         state.yaw = MathHelper.lerpAngleDegrees(tickProgress, entity.lastYaw, entity.getYaw());
         state.timeSinceLastHit = (float)(entity.getWorld().getTime() - entity.lastHitTime) + tickProgress;
@@ -54,7 +52,7 @@ public class EaselEntityRenderer extends LivingEntityRenderer<EaselEntity, Easel
     }
 
     @Override
-    protected boolean hasLabel(EaselEntity entity, double d) {
+    protected boolean hasLabel(CanvasEaselEntity entity, double d) {
         return entity.hasStackEquipped(EquipmentSlot.MAINHAND);
     }
 

@@ -18,7 +18,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -51,13 +50,12 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
-
-public class EaselEntity extends LivingEntity {
-    public static final TrackedData<ItemStack> CANVAS_ITEM = DataTracker.registerData(EaselEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+public class CanvasEaselEntity extends LivingEntity {
+    public static final TrackedData<ItemStack> CANVAS_ITEM = DataTracker.registerData(CanvasEaselEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
     public long lastHitTime;
 
-    public EaselEntity(EntityType<? extends LivingEntity> entityType, World world) {
+    public CanvasEaselEntity(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
 
@@ -93,7 +91,11 @@ public class EaselEntity extends LivingEntity {
         if (displayStack.isEmpty()) {
             if (!playerHeldStack.isEmpty()) {
                 setDisplayStack(playerHeldStack.copy());
-                player.setStackInHand(hand, ItemStack.EMPTY);
+
+                // Only remove the player's held item if they're not in creative mode
+                if (!player.isCreative()) {
+                    player.setStackInHand(hand, ItemStack.EMPTY);
+                }
             }
         } else if (!displayItemIsCanvas || player.isSneaking()) {
             if (hand == Hand.MAIN_HAND && playerHeldStack.isEmpty()) {
@@ -203,17 +205,20 @@ public class EaselEntity extends LivingEntity {
     }
 
     public boolean damage(ServerWorld world, DamageSource source, float amount) {
-        if (this.isRemoved()) {
+        if (source.isSourceCreativePlayer()) {
+            this.breakAndDropItem(world, source, true);
+            this.remove(RemovalReason.KILLED);
+        } else if (this.isRemoved()) {
             return false;
         } else if (!world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && source.getAttacker() instanceof MobEntity) {
             return false;
         } else if (source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-
+            this.breakAndDropItem(world, source, true);
             this.remove(RemovalReason.KILLED);
             return false;
         } else if (!this.isInvulnerableTo(world, source)) {
             if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
-                this.breakAndDropItem(world, source);
+                this.breakAndDropItem(world, source, false);
                 this.remove(RemovalReason.KILLED);
                 return false;
             } else if (source.isIn(DamageTypeTags.IGNITES_ARMOR_STANDS)) {
@@ -252,7 +257,7 @@ public class EaselEntity extends LivingEntity {
                             this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
                             this.lastHitTime = l;
                         } else {
-                            this.breakAndDropItem(world, source);
+                            this.breakAndDropItem(world, source, false);
                             this.spawnBreakParticles();
                             this.remove(RemovalReason.KILLED);
                         }
@@ -261,9 +266,9 @@ public class EaselEntity extends LivingEntity {
                     }
                 }
             }
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     public void handleStatus(byte status) {
@@ -298,7 +303,7 @@ public class EaselEntity extends LivingEntity {
         float f = this.getHealth();
         f -= amount;
         if (f <= 0.5F) {
-            breakAndDropItem(world, damageSource);
+            breakAndDropItem(world, damageSource, false);
             this.kill(world);
         } else {
             this.setHealth(f);
@@ -307,12 +312,18 @@ public class EaselEntity extends LivingEntity {
 
     }
 
-    private void breakAndDropItem(ServerWorld world, DamageSource damageSource) {
-        ItemStack itemStack = new ItemStack(CrazyItems.EASEL_ITEM);
-        itemStack.set(DataComponentTypes.CUSTOM_NAME, this.getCustomName());
-        Block.dropStack(this.getWorld(), this.getBlockPos(), itemStack);
+    private void breakAndDropItem(ServerWorld world, DamageSource damageSource, boolean isCreative) {
+        if (!isCreative) {
+            Block.dropStack(this.getWorld(), this.getBlockPos(), getEaselItemStack());
+        }
         Block.dropStack(this.getWorld(), this.getBlockPos(), getDisplayStack());
         this.onBreak(world, damageSource);
+    }
+
+    private ItemStack getEaselItemStack() {
+        ItemStack itemStack = new ItemStack(CrazyItems.EASEL_ITEM);
+        itemStack.set(DataComponentTypes.CUSTOM_NAME, this.getCustomName());
+        return itemStack;
     }
 
     private void onBreak(ServerWorld world, DamageSource damageSource) {
@@ -323,12 +334,12 @@ public class EaselEntity extends LivingEntity {
     @Override
     public @Nullable ItemStack getPickBlockStack() {
         ItemStack display = getDisplayStack();
-        if (display.isEmpty()) return new ItemStack(CrazyItems.EASEL_ITEM);
+        if (display.isEmpty()) return getEaselItemStack();
         return display.copy();
     }
 
     private void playBreakSound() {
-        this.getWorld().playSound((Entity)null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ARMOR_STAND_BREAK, this.getSoundCategory(), 1.0F, 1.0F);
+        this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ARMOR_STAND_BREAK, this.getSoundCategory(), 1.0F, 1.0F);
     }
 
     public ItemStack getDisplayStack() {
