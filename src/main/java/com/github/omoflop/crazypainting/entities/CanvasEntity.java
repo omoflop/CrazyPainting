@@ -2,44 +2,44 @@ package com.github.omoflop.crazypainting.entities;
 
 import com.github.omoflop.crazypainting.content.CrazyEntities;
 import com.github.omoflop.crazypainting.items.CanvasItem;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.decoration.AbstractDecorationEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.decoration.HangingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
-public class CanvasEntity extends AbstractDecorationEntity {
-    public static final TrackedData<ItemStack> CANVAS_ITEM = DataTracker.registerData(CanvasEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-    public static final TrackedData<Byte> ROTATION = DataTracker.registerData(CanvasEntity.class, TrackedDataHandlerRegistry.BYTE);
+public class CanvasEntity extends HangingEntity {
+    public static final EntityDataAccessor<ItemStack> CANVAS_ITEM = SynchedEntityData.defineId(CanvasEntity.class, EntityDataSerializers.ITEM_STACK);
+    public static final EntityDataAccessor<Byte> ROTATION = SynchedEntityData.defineId(CanvasEntity.class, EntityDataSerializers.BYTE);
 
-    public CanvasEntity(EntityType<? extends AbstractDecorationEntity> entityType, World world) {
+    public CanvasEntity(EntityType<? extends HangingEntity> entityType, Level world) {
         super(entityType, world);
     }
 
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(CANVAS_ITEM, ItemStack.EMPTY);
-        builder.add(ROTATION, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(CANVAS_ITEM, ItemStack.EMPTY);
+        builder.define(ROTATION, (byte)0);
     }
 
-    public static CanvasEntity create(World world, ItemStack stack, BlockPos pos, Direction facing) {
+    public static CanvasEntity create(Level world, ItemStack stack, BlockPos pos, Direction facing) {
         CanvasEntity entity = new CanvasEntity(CrazyEntities.CANVAS_ENTITY_TYPE, world);
-        entity.setPosition(pos.toCenterPos());
+        entity.setPos(pos.getCenter());
         entity.setHeldItemStack(stack);
-        entity.setFacing(facing);
+        entity.setDirection(facing);
         return entity;
     }
 
@@ -48,7 +48,7 @@ public class CanvasEntity extends AbstractDecorationEntity {
     }
 
     @Override
-    public ActionResult interact(PlayerEntity player, Hand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand) {
         if (getHeldItemStack().getItem() instanceof CanvasItem canvasItem) {
 
             if (canvasItem.width == canvasItem.height) {
@@ -56,17 +56,17 @@ public class CanvasEntity extends AbstractDecorationEntity {
             } else {
                 setRotation((byte) (getItemRotation() + 2));
             }
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         return super.interact(player, hand);
     }
 
     @Override
-    protected Box calculateBoundingBox(BlockPos pos, Direction side) {
+    protected AABB calculateBoundingBox(BlockPos pos, Direction side) {
         float width = 1;
         float height = 1;
 
-        if (dataTracker.get(CANVAS_ITEM).getItem() instanceof CanvasItem canvas) {
+        if (entityData.get(CANVAS_ITEM).getItem() instanceof CanvasItem canvas) {
             width = canvas.width;
             height = canvas.height;
         }
@@ -81,44 +81,44 @@ public class CanvasEntity extends AbstractDecorationEntity {
         height -= pixel*2.35f;
 
         if (side == Direction.UP) {
-            return Box.of(pos.toCenterPos().subtract(widthTweak, distFromWall, heightTweak), width, pixel, height);
+            return AABB.ofSize(pos.getCenter().subtract(widthTweak, distFromWall, heightTweak), width, pixel, height);
         } else if (side == Direction.DOWN) {
-            return Box.of(pos.toCenterPos().subtract(widthTweak, -distFromWall, heightTweak), width, pixel, height);
+            return AABB.ofSize(pos.getCenter().subtract(widthTweak, -distFromWall, heightTweak), width, pixel, height);
         } else if (side == Direction.NORTH) {
-            return Box.of(pos.toCenterPos().subtract(widthTweak, heightTweak, -distFromWall), width, height, pixel);
+            return AABB.ofSize(pos.getCenter().subtract(widthTweak, heightTweak, -distFromWall), width, height, pixel);
         }  else if (side == Direction.EAST) {
-            return Box.of(pos.toCenterPos().subtract(distFromWall, heightTweak, widthTweak), pixel, height, width);
+            return AABB.ofSize(pos.getCenter().subtract(distFromWall, heightTweak, widthTweak), pixel, height, width);
         } else if (side == Direction.SOUTH) {
-            return Box.of(pos.toCenterPos().subtract(widthTweak, heightTweak, distFromWall), width, height, pixel);
+            return AABB.ofSize(pos.getCenter().subtract(widthTweak, heightTweak, distFromWall), width, height, pixel);
         } else if (side == Direction.WEST) {
-            return Box.of(pos.toCenterPos().subtract(-distFromWall, heightTweak, widthTweak), pixel, height, width);
+            return AABB.ofSize(pos.getCenter().subtract(-distFromWall, heightTweak, widthTweak), pixel, height, width);
         }
 
-        return Box.of(pos.toCenterPos(), 1, 1, 1);
+        return AABB.ofSize(pos.getCenter(), 1, 1, 1);
     }
 
-    protected void setFacing(Direction facing) {
-        super.setFacingInternal(facing);
+    protected void setDirection(Direction facing) {
+        super.setDirectionRaw(facing);
         if (facing.getAxis().isHorizontal()) {
-            this.setPitch(0.0F);
-            this.setYaw((float)(facing.getHorizontalQuarterTurns() * 90));
+            this.setXRot(0.0F);
+            this.setYRot((float)(facing.get2DDataValue() * 90));
         } else {
-            this.setPitch((float)(-90 * facing.getDirection().offset()));
-            this.setYaw(0.0F);
+            this.setXRot((float)(-90 * facing.getAxisDirection().getStep()));
+            this.setYRot(0.0F);
         }
 
-        this.lastPitch = this.getPitch();
-        this.lastYaw = this.getYaw();
-        this.updateAttachmentPosition();
+        this.xRotO = this.getXRot();
+        this.yRotO = this.getYRot();
+        this.recalculateBoundingBox();
     }
 
     @Override
-    public @Nullable ItemStack getPickBlockStack() {
+    public @Nullable ItemStack getPickResult() {
         return getHeldItemStack().copy();
     }
 
     @Override
-    public void onPlace() {
+    public void playPlacementSound() {
 
     }
 
@@ -128,13 +128,13 @@ public class CanvasEntity extends AbstractDecorationEntity {
     }
 
     @Override
-    public void onBreak(ServerWorld world, @Nullable Entity breaker) {
-        if (breaker instanceof PlayerEntity player && player.isCreative()) return;
-        dropStack(world, dataTracker.get(CANVAS_ITEM));
+    public void dropItem(ServerLevel world, @Nullable Entity breaker) {
+        if (breaker instanceof Player player && player.isCreative()) return;
+        spawnAtLocation(world, entityData.get(CANVAS_ITEM));
     }
 
     public ItemStack getHeldItemStack() {
-        return dataTracker.get(CANVAS_ITEM);
+        return entityData.get(CANVAS_ITEM);
     }
 
     public void setHeldItemStack(ItemStack value) {
@@ -143,45 +143,45 @@ public class CanvasEntity extends AbstractDecorationEntity {
         }
 
         this.setAsStackHolder(value);
-        this.getDataTracker().set(CANVAS_ITEM, value);
+        this.getEntityData().set(CANVAS_ITEM, value);
     }
 
     private void setAsStackHolder(ItemStack stack) {
         if (!stack.isEmpty() && stack.getFrame() == null) {
-            stack.setHolder(this);
+            stack.setEntityRepresentation(this);
         }
 
-        this.updateAttachmentPosition();
+        this.recalculateBoundingBox();
     }
 
     public byte getItemRotation() {
-        return this.getDataTracker().get(ROTATION);
+        return this.getEntityData().get(ROTATION);
     }
 
     public void setItemRotation(byte rotation) {
-        this.getDataTracker().set(ROTATION, rotation);
+        this.getEntityData().set(ROTATION, rotation);
     }
 
     public void setRotation(byte value) {
-        this.getDataTracker().set(ROTATION, (byte)(value % 4));
+        this.getEntityData().set(ROTATION, (byte)(value % 4));
     }
 
-    protected void writeCustomData(WriteView view) {
-        super.writeCustomData(view);
+    protected void addAdditionalSaveData(ValueOutput view) {
+        super.addAdditionalSaveData(view);
         ItemStack itemStack = this.getHeldItemStack();
-        if (!itemStack.isEmpty()) view.put("Item", ItemStack.CODEC, itemStack);
+        if (!itemStack.isEmpty()) view.store("Item", ItemStack.CODEC, itemStack);
 
         view.putByte("ItemRotation", this.getItemRotation());
-        view.put("Facing", Direction.INDEX_CODEC, this.getFacing());
+        view.store("Facing", Direction.LEGACY_ID_CODEC, this.getNearestViewDirection());
     }
 
-    protected void readCustomData(ReadView view) {
-        super.readCustomData(view);
+    protected void readAdditionalSaveData(ValueInput view) {
+        super.readAdditionalSaveData(view);
         ItemStack itemStack = view.read("Item", ItemStack.CODEC).orElse(ItemStack.EMPTY);
 
         this.setHeldItemStack(itemStack);
-        this.setItemRotation(view.getByte("ItemRotation", (byte)0));
-        this.setFacing(view.read("Facing", Direction.INDEX_CODEC).orElse(Direction.DOWN));
+        this.setItemRotation(view.getByteOr("ItemRotation", (byte)0));
+        this.setDirection(view.read("Facing", Direction.LEGACY_ID_CODEC).orElse(Direction.DOWN));
     }
 
 }

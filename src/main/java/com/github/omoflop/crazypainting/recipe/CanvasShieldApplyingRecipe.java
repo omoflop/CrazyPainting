@@ -7,65 +7,63 @@ import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.content.CrazyRecipes;
 import com.github.omoflop.crazypainting.items.CanvasItem;
 import com.github.omoflop.crazypainting.items.PaletteItem;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.ShieldDecorationRecipe;
-import net.minecraft.recipe.SpecialCraftingRecipe;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 
-public class CanvasShieldApplyingRecipe extends SpecialCraftingRecipe {
-    public CanvasShieldApplyingRecipe(CraftingRecipeCategory category) {
+public class CanvasShieldApplyingRecipe extends CustomRecipe {
+    public CanvasShieldApplyingRecipe(CraftingBookCategory category) {
         super(category);
     }
 
     @Override
-    public boolean matches(CraftingRecipeInput input, World world) {
+    public boolean matches(CraftingInput input, Level world) {
         return findMatch(input).isPresent();
     }
 
     @Override
-    public ItemStack craft(CraftingRecipeInput input, RegistryWrapper.WrapperLookup registries) {
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
         Match match = findMatch(input).orElseThrow();
         CanvasDataComponent canvasData = match.canvas.get(CrazyComponents.CANVAS_DATA);
 
         ItemStack result = match.shield.copy();
         result.set(CrazyComponents.CANVAS_DATA, canvasData);
-        LoreComponent lore = result.getOrDefault(DataComponentTypes.LORE, LoreComponent.DEFAULT);
-        LoreComponent newLore = lore.with(Text.literal(canvasData.title()).formatted(Formatting.YELLOW));
-        result.set(DataComponentTypes.LORE, newLore);
+        ItemLore lore = result.getOrDefault(DataComponents.LORE, ItemLore.EMPTY);
+        ItemLore newLore = lore.withLineAdded(Component.literal(canvasData.title()).withStyle(ChatFormatting.YELLOW));
+        result.set(DataComponents.LORE, newLore);
 
         return result;
     }
 
     @Override
-    public RecipeSerializer<? extends SpecialCraftingRecipe> getSerializer() {
+    public RecipeSerializer<? extends CustomRecipe> getSerializer() {
         return CrazyRecipes.CANVAS_SHIELD_APPLYING;
     }
 
     // Requires a signed canvas and a shield with no banner applied
-    private Optional<Match> findMatch(CraftingRecipeInput input) {
-        if (input.getStackCount() != 2) return Optional.empty();
+    private Optional<Match> findMatch(CraftingInput input) {
+        if (input.ingredientCount() != 2) return Optional.empty();
 
-        List<ItemStack> stacks = input.getStacks();
+        List<ItemStack> stacks = input.items();
         ItemStack shieldStack = null;
         ItemStack canvasStack = null;
 
         for (ItemStack stack : stacks) {
-            if (stack.isOf(Items.SHIELD)) {
+            if (stack.is(Items.SHIELD)) {
                 if (shieldStack != null) return Optional.empty();
                 shieldStack = stack;
             }

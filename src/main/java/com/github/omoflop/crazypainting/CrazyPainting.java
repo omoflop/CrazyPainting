@@ -2,9 +2,9 @@ package com.github.omoflop.crazypainting;
 
 import com.github.omoflop.crazypainting.content.*;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -85,6 +85,6 @@ public class CrazyPainting implements ModInitializer {
     }
 
     public static Identifier id(String path) {
-        return Identifier.of("crazypainting", path);
+        return Identifier.fromNamespaceAndPath("crazypainting", path);
     }
 }

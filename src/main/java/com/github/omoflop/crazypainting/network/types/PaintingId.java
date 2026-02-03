@@ -1,15 +1,14 @@
 package com.github.omoflop.crazypainting.network.types;
 
-import net.minecraft.network.PacketByteBuf;
-
 import java.util.Objects;
+import net.minecraft.network.FriendlyByteBuf;
 
 public record PaintingId(int value) {
-    public void writeTo(PacketByteBuf buf) {
+    public void writeTo(FriendlyByteBuf buf) {
         buf.writeInt(value);
     }
 
-    public static PaintingId readFrom(PacketByteBuf buf) {
+    public static PaintingId readFrom(FriendlyByteBuf buf) {
         return new PaintingId(buf.readInt());
     }
 

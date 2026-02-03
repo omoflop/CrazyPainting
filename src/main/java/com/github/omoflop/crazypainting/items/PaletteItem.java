@@ -4,20 +4,19 @@ import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.Identifiable;
 import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.content.CrazyItems;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 @SuppressWarnings({"OptionalGetWithoutIsPresent", "NullPointerException"})
 public class PaletteItem extends Item implements Identifiable {
     public final Identifier id;
 
     public PaletteItem(String registryName) {
-        super(new Settings().maxCount(1).registryKey(Identifiable.key(registryName)).useCooldown(0.25f));
+        super(new Properties().stacksTo(1).setId(Identifiable.key(registryName)).useCooldown(0.25f));
         this.id = CrazyPainting.id(registryName);
     }
 
@@ -27,8 +26,8 @@ public class PaletteItem extends Item implements Identifiable {
     }
 
     public static void addColor(ItemStack stack, int color) {
-        if (!stack.hasChangedComponent(CrazyComponents.PALETTE_COLORS)) return;
-        var component = stack.getComponentChanges().get(CrazyComponents.PALETTE_COLORS);
+        if (!stack.hasNonDefault(CrazyComponents.PALETTE_COLORS)) return;
+        var component = stack.getComponentsPatch().get(CrazyComponents.PALETTE_COLORS);
 
         List<Integer> colors = Objects.requireNonNull(component).get().colors();
         if (!colors.contains(color)) {
@@ -37,8 +36,8 @@ public class PaletteItem extends Item implements Identifiable {
     }
 
     public static void removeColor(ItemStack stack, int color) {
-        if (!stack.hasChangedComponent(CrazyComponents.PALETTE_COLORS)) return;
-        var component = stack.getComponentChanges().get(CrazyComponents.PALETTE_COLORS);
+        if (!stack.hasNonDefault(CrazyComponents.PALETTE_COLORS)) return;
+        var component = stack.getComponentsPatch().get(CrazyComponents.PALETTE_COLORS);
 
         List<Integer> colors = Objects.requireNonNull(component).get().colors();
         if (colors.contains(color)) {
@@ -47,8 +46,8 @@ public class PaletteItem extends Item implements Identifiable {
     }
 
     public static void addColors(ItemStack stack, Iterable<Integer> iterable) {
-        if (!stack.hasChangedComponent(CrazyComponents.PALETTE_COLORS)) return;
-        var component = stack.getComponentChanges().get(CrazyComponents.PALETTE_COLORS);
+        if (!stack.hasNonDefault(CrazyComponents.PALETTE_COLORS)) return;
+        var component = stack.getComponentsPatch().get(CrazyComponents.PALETTE_COLORS);
 
         List<Integer> colors = Objects.requireNonNull(component).get().colors();
         for (Integer i : iterable) {
@@ -67,16 +66,16 @@ public class PaletteItem extends Item implements Identifiable {
     }
 
     public static boolean hasColor(ItemStack stack, int color) {
-        if (!stack.hasChangedComponent(CrazyComponents.PALETTE_COLORS)) return false;
-        var component = stack.getComponentChanges().get(CrazyComponents.PALETTE_COLORS);
+        if (!stack.hasNonDefault(CrazyComponents.PALETTE_COLORS)) return false;
+        var component = stack.getComponentsPatch().get(CrazyComponents.PALETTE_COLORS);
 
         List<Integer> colors = Objects.requireNonNull(component).get().colors();
         return colors.contains(color);
     }
 
     public static boolean hasAnyColor(ItemStack stack, Iterable<Integer> iterable) {
-        if (!stack.hasChangedComponent(CrazyComponents.PALETTE_COLORS)) return false;
-        var component = stack.getComponentChanges().get(CrazyComponents.PALETTE_COLORS);
+        if (!stack.hasNonDefault(CrazyComponents.PALETTE_COLORS)) return false;
+        var component = stack.getComponentsPatch().get(CrazyComponents.PALETTE_COLORS);
 
         List<Integer> colors = Objects.requireNonNull(component).get().colors();
         for (Integer i : iterable) {
@@ -86,8 +85,8 @@ public class PaletteItem extends Item implements Identifiable {
     }
 
     public static Collection<Integer> getColors(ItemStack stack) {
-        if (!stack.hasChangedComponent(CrazyComponents.PALETTE_COLORS)) return List.of();
-        var component = stack.getComponentChanges().get(CrazyComponents.PALETTE_COLORS);
+        if (!stack.hasNonDefault(CrazyComponents.PALETTE_COLORS)) return List.of();
+        var component = stack.getComponentsPatch().get(CrazyComponents.PALETTE_COLORS);
 
         return List.copyOf(Objects.requireNonNull(component).get().colors());
     }

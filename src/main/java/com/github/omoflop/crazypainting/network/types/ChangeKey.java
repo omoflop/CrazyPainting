@@ -1,18 +1,17 @@
 package com.github.omoflop.crazypainting.network.types;
 
 import com.github.omoflop.crazypainting.content.CrazyNetworking;
-import net.minecraft.network.PacketByteBuf;
-
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Objects;
+import net.minecraft.network.FriendlyByteBuf;
 
 public record ChangeKey(byte[] key) {
-    public void writeTo(PacketByteBuf buf) {
+    public void writeTo(FriendlyByteBuf buf) {
         CrazyNetworking.writeByteArray(buf, key);
     }
 
-    public static ChangeKey readFrom(PacketByteBuf buf) {
+    public static ChangeKey readFrom(FriendlyByteBuf buf) {
         return new ChangeKey(CrazyNetworking.readByteArray(buf));
     }
 

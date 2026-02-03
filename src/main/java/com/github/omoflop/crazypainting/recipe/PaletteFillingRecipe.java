@@ -5,27 +5,27 @@ import com.github.omoflop.crazypainting.components.PaletteColorsComponent;
 import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.content.CrazyRecipes;
 import com.github.omoflop.crazypainting.items.PaletteItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialCraftingRecipe;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 
-public class PaletteFillingRecipe extends SpecialCraftingRecipe {
-    public PaletteFillingRecipe(CraftingRecipeCategory category) {
+public class PaletteFillingRecipe extends CustomRecipe {
+    public PaletteFillingRecipe(CraftingBookCategory category) {
         super(category);
     }
 
     @Override
-    public boolean matches(CraftingRecipeInput input, World world) {
-        List<ItemStack> stacks = input.getStacks();
+    public boolean matches(CraftingInput input, Level world) {
+        List<ItemStack> stacks = input.items();
 
         // Ensure there is a palette
         ItemStack paletteStack = tryGetPalette(stacks);
@@ -40,8 +40,8 @@ public class PaletteFillingRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(CraftingRecipeInput input, RegistryWrapper.WrapperLookup registries) {
-        List<ItemStack> stacks = input.getStacks();
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+        List<ItemStack> stacks = input.items();
 
         // Find the palette item
         ItemStack paletteStack = tryGetPalette(stacks);
@@ -64,7 +64,7 @@ public class PaletteFillingRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public RecipeSerializer<? extends SpecialCraftingRecipe> getSerializer() {
+    public RecipeSerializer<? extends CustomRecipe> getSerializer() {
         return CrazyRecipes.PALETTE_FILLING;
     }
 

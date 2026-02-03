@@ -6,16 +6,16 @@ import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.entities.CanvasEaselEntity;
 import com.github.omoflop.crazypainting.network.c2s.SignPaintingC2S;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 
 public class SignPaintingServerHandler implements ServerPlayNetworking.PlayPayloadHandler<SignPaintingC2S> {
     @Override
     public void receive(SignPaintingC2S packet, ServerPlayNetworking.Context ctx) {
-        ServerPlayerEntity player = ctx.player();
+        ServerPlayer player = ctx.player();
 
-        Entity entity = player.getWorld().getEntityById(packet.easelEntityId());
+        Entity entity = player.level().getEntity(packet.easelEntityId());
         if (!(entity instanceof CanvasEaselEntity easel)) {
             if (CrazyPainting.SHOW_DEBUG_LOGS) CrazyPainting.LOGGER.warn("Received invalid entity id for sign painting packet");
             return;
@@ -28,7 +28,7 @@ public class SignPaintingServerHandler implements ServerPlayNetworking.PlayPaylo
             return;
         }
 
-        displayStack.set(CrazyComponents.CANVAS_DATA, data.withSignedBy(player.getNameForScoreboard()).withTitle(packet.title()).withGeneration((byte)0));
+        displayStack.set(CrazyComponents.CANVAS_DATA, data.withSignedBy(player.getScoreboardName()).withTitle(packet.title()).withGeneration((byte)0));
         easel.setDisplayStack(displayStack);
     }
 }

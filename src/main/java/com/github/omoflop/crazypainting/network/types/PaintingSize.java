@@ -1,7 +1,7 @@
 package com.github.omoflop.crazypainting.network.types;
 
 import com.github.omoflop.crazypainting.items.CanvasItem;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 
 public record PaintingSize(byte width, byte height) {
 
@@ -13,11 +13,11 @@ public record PaintingSize(byte width, byte height) {
         return new PaintingSize(canvasItem.width, canvasItem.height);
     }
 
-    public void writeTo(PacketByteBuf buf) {
+    public void writeTo(FriendlyByteBuf buf) {
         buf.writeByte(pack());
     }
 
-    public static PaintingSize readFrom(PacketByteBuf buf) {
+    public static PaintingSize readFrom(FriendlyByteBuf buf) {
         return unpack(buf.readByte());
     }
 

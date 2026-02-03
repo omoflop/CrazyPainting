@@ -5,26 +5,25 @@ import com.github.omoflop.crazypainting.Identifiable;
 import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.entities.CanvasEntity;
 import com.github.omoflop.crazypainting.network.types.PaintingSize;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SideShapeType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.EquippableComponent;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.equipment.Equippable;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SupportType;
+import net.minecraft.world.level.block.state.BlockState;
 
 
 public class CanvasItem extends Item implements Identifiable {
@@ -36,9 +35,9 @@ public class CanvasItem extends Item implements Identifiable {
     public final byte height;
 
     public CanvasItem(String registryName, byte width, byte height) {
-        super(new Settings().maxCount(1).registryKey(Identifiable.key(registryName))
-                .component(DataComponentTypes.LORE, new LoreComponent(List.of(), List.of(Text.literal(width + "x" + height).formatted(Formatting.WHITE))))
-                .component(DataComponentTypes.EQUIPPABLE, EquippableComponent.builder(EquipmentSlot.HEAD).swappable(false).equipOnInteract(false).build())
+        super(new Properties().stacksTo(1).setId(Identifiable.key(registryName))
+                .component(DataComponents.LORE, new ItemLore(List.of(), List.of(Component.literal(width + "x" + height).withStyle(ChatFormatting.WHITE))))
+                .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.HEAD).setSwappable(false).setEquipOnInteract(false).build())
         );
         this.id = CrazyPainting.id(registryName);
         this.width = width;
@@ -47,20 +46,20 @@ public class CanvasItem extends Item implements Identifiable {
     }
 
     @Override
-    public Text getName(ItemStack stack) {
+    public Component getName(ItemStack stack) {
         String title = getTitle(stack);
         if (title.equals(UNTITLED)) return super.getName(stack);
-        return Text.literal(title);
+        return Component.literal(title);
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext context) {
-        Direction side = context.getSide();
-        BlockPos pos = context.getBlockPos();
-        World world = context.getWorld();
-        ItemStack usageStack = context.getStack();
+    public InteractionResult useOn(UseOnContext context) {
+        Direction side = context.getClickedFace();
+        BlockPos pos = context.getClickedPos();
+        Level world = context.getLevel();
+        ItemStack usageStack = context.getItemInHand();
 
-        if (CanvasItem.getCanvasId(usageStack) == -1) return ActionResult.PASS;
+        if (CanvasItem.getCanvasId(usageStack) == -1) return InteractionResult.PASS;
         BlockState blockState = world.getBlockState(pos);
 
         //if (tryPlaceBed(usageStack, world, pos, side, blockState)) {
@@ -69,11 +68,11 @@ public class CanvasItem extends Item implements Identifiable {
         //}
 
         if (tryPlaceSolid(usageStack, world, pos, side, blockState)) {
-            context.getStack().decrementUnlessCreative(1, context.getPlayer());
-            return ActionResult.SUCCESS;
+            context.getItemInHand().consume(1, context.getPlayer());
+            return InteractionResult.SUCCESS;
         }
 
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
     //private boolean tryPlaceBed(ItemStack usageStack, World world, BlockPos pos, Direction side, BlockState blockState) {
@@ -86,20 +85,20 @@ public class CanvasItem extends Item implements Identifiable {
     //    return true;
     //}
 
-    private boolean tryPlaceSolid(ItemStack usageStack, World world, BlockPos pos, Direction side, BlockState blockState) {
-        if (!blockState.isSideSolid(world, pos, side, SideShapeType.CENTER)) return false;
+    private boolean tryPlaceSolid(ItemStack usageStack, Level world, BlockPos pos, Direction side, BlockState blockState) {
+        if (!blockState.isFaceSturdy(world, pos, side, SupportType.CENTER)) return false;
 
-        ItemStack stack = usageStack.copyComponentsToNewStack(usageStack.getItem(), 1);
-        BlockPos placePos = pos.add(side.getVector());
+        ItemStack stack = usageStack.transmuteCopy(usageStack.getItem(), 1);
+        BlockPos placePos = pos.offset(side.getUnitVec3i());
         CanvasEntity entity = CanvasEntity.create(world, stack, placePos, side);
-        world.spawnEntity(entity);
+        world.addFreshEntity(entity);
 
         return true;
     }
 
 
     public static int getCanvasId(ItemStack stack) {
-        if (!stack.hasChangedComponent(CrazyComponents.CANVAS_DATA)) return -1;
+        if (!stack.hasNonDefault(CrazyComponents.CANVAS_DATA)) return -1;
         var component = stack.getComponents().get(CrazyComponents.CANVAS_DATA);
         if (component == null) return -1;
         return component.id();
@@ -107,21 +106,21 @@ public class CanvasItem extends Item implements Identifiable {
 
 
     public static int getGeneration(ItemStack stack) {
-        if (!stack.hasChangedComponent(CrazyComponents.CANVAS_DATA)) return -1;
+        if (!stack.hasNonDefault(CrazyComponents.CANVAS_DATA)) return -1;
         var component = stack.getComponents().get(CrazyComponents.CANVAS_DATA);
         if (component == null) return -1;
         return component.generation();
     }
 
     public static boolean getGlow(ItemStack stack) {
-        if (!stack.hasChangedComponent(CrazyComponents.CANVAS_DATA)) return false;
+        if (!stack.hasNonDefault(CrazyComponents.CANVAS_DATA)) return false;
         var component = stack.getComponents().get(CrazyComponents.CANVAS_DATA);
         if (component == null) return false;
         return component.glow();
     }
 
     public static @Nullable String getSignedBy(ItemStack stack) {
-        if (!stack.hasChangedComponent(CrazyComponents.CANVAS_DATA)) return null;
+        if (!stack.hasNonDefault(CrazyComponents.CANVAS_DATA)) return null;
 
         var component = stack.getComponents().get(CrazyComponents.CANVAS_DATA);
         if (component == null) return null;
@@ -133,7 +132,7 @@ public class CanvasItem extends Item implements Identifiable {
     }
 
     public static String getTitle(ItemStack stack) {
-        if (!stack.hasChangedComponent(CrazyComponents.CANVAS_DATA)) return UNTITLED;
+        if (!stack.hasNonDefault(CrazyComponents.CANVAS_DATA)) return UNTITLED;
 
         var component = stack.getComponents().get(CrazyComponents.CANVAS_DATA);
         if (component == null) return UNTITLED;

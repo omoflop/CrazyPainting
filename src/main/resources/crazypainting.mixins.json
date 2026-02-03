@@ -11,5 +11,11 @@
   },
   "overwrites": {
     "requireAnnotations": true
-  }
+  },
+  "client": [
+    "client.MinecraftClientMixin",
+    "client.ShieldModelRendererMixin",
+    "client.SpecialItemModelMixin",
+    "client.TextureManagerAccessor"
+  ]
 }

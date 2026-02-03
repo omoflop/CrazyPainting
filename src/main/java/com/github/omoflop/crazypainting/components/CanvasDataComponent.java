@@ -5,25 +5,21 @@ import com.github.omoflop.crazypainting.items.CanvasItem;
 import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.component.ComponentsAccess;
-import net.minecraft.component.type.WrittenBookContentComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.WritableBookItem;
-import net.minecraft.item.WrittenBookItem;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.arguments.selector.SelectorPattern;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ParsedSelector;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipProvider;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 
 
-public record CanvasDataComponent(int id, boolean glow, String signedBy, String title, byte generation) implements TooltipAppender {
+public record CanvasDataComponent(int id, boolean glow, String signedBy, String title, byte generation) implements TooltipProvider {
     public static final Codec<CanvasDataComponent> CODEC = RecordCodecBuilder.create(builder -> builder.group(
             Codec.INT.fieldOf("id").forGetter(CanvasDataComponent::id),
             Codec.BOOL.fieldOf("glow").forGetter(CanvasDataComponent::glow),
@@ -61,12 +57,12 @@ public record CanvasDataComponent(int id, boolean glow, String signedBy, String 
     }
 
     @Override
-    public void appendTooltip(Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type, ComponentsAccess components) {
+    public void addToTooltip(Item.TooltipContext context, Consumer<Component> textConsumer, TooltipFlag type, DataComponentGetter components) {
 
         CanvasDataComponent data = components.get(CrazyComponents.CANVAS_DATA);
         assert data != null;
         if (type.isAdvanced()) {
-            textConsumer.accept(Text.literal("Canvas ID: " + data.id).formatted(Formatting.GRAY));
+            textConsumer.accept(Component.literal("Canvas ID: " + data.id).withStyle(ChatFormatting.GRAY));
         }
 
         if (data.signedBy != null && !data.signedBy.isEmpty()) {
@@ -74,17 +70,17 @@ public record CanvasDataComponent(int id, boolean glow, String signedBy, String 
         }
     }
 
-    private void appendSignedByTooltip(CanvasDataComponent data, Consumer<Text> textConsumer) {
-        var selector = ParsedSelector.parse(data.signedBy);
+    private void appendSignedByTooltip(CanvasDataComponent data, Consumer<Component> textConsumer) {
+        var selector = SelectorPattern.parse(data.signedBy);
 
-        var arg = Text.literal("Unknown");
+        var arg = Component.literal("Unknown");
         if (selector.isSuccess()) {
-            arg = Text.selector(selector.getOrThrow(), Optional.empty());
+            arg = Component.selector(selector.getOrThrow(), Optional.empty());
         }
 
-        textConsumer.accept(Text.translatable("item.crazypainting.canvas.tooltip.signed", arg).formatted(Formatting.YELLOW));
+        textConsumer.accept(Component.translatable("item.crazypainting.canvas.tooltip.signed", arg).withStyle(ChatFormatting.YELLOW));
 
         if (this.generation >= 0)
-            textConsumer.accept(Text.translatable("book.generation." + this.generation).formatted(Formatting.GRAY));
+            textConsumer.accept(Component.translatable("book.generation." + this.generation).withStyle(ChatFormatting.GRAY));
     }
 }

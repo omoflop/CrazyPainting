@@ -8,7 +8,7 @@ import com.github.omoflop.crazypainting.network.types.PaintingId;
 import com.github.omoflop.crazypainting.state.CanvasManager;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
@@ -19,11 +19,11 @@ import java.util.UUID;
 public class ServerPaintingChangeEventHandler implements ServerPlayNetworking.PlayPayloadHandler<PaintingChangeEvent> {
     @Override
     public void receive(PaintingChangeEvent packet, ServerPlayNetworking.Context ctx) {
-        ServerPlayerEntity player = ctx.player();
-        MinecraftServer server = Objects.requireNonNull(player.getServer());
+        ServerPlayer player = ctx.player();
+        MinecraftServer server = Objects.requireNonNull(player.level()).getServer();
 
         // Ensure the player may be sending this data
-        UUID uuid = player.getUuid();
+        UUID uuid = player.getUUID();
         if (!CanvasManager.CHANGE_IDS.containsKey(uuid)) {
             printFail(player, "Server does not have a change key initialized for this player.");
             return;
@@ -66,12 +66,11 @@ public class ServerPaintingChangeEventHandler implements ServerPlayNetworking.Pl
         }
     }
 
-    private static void printFail(ServerPlayerEntity player, String extras, Object... params) {
+    private static void printFail(ServerPlayer player, String extras, Object... params) {
         CrazyPainting.LOGGER.log(Level.ERROR, "Failed to receive painting data from %s. Reason: %s".formatted(player.getName().getString(), String.format(extras, params)));
     }
 
-
-    private static void printFail(ServerPlayerEntity player, ChangeKey key, PaintingId id, String extras, Object... params) {
+    private static void printFail(ServerPlayer player, ChangeKey key, PaintingId id, String extras, Object... params) {
         if (!CrazyPainting.SHOW_DEBUG_LOGS) return;;
         CrazyPainting.LOGGER.log(Level.ERROR, "Failed to receive painting data from %s. Key: '%s', Id: '%s', Reason: %s".formatted(
                 player.getName().getString(),

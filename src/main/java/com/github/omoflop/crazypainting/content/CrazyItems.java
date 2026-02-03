@@ -6,14 +6,13 @@ import com.github.omoflop.crazypainting.items.CanvasItem;
 import com.github.omoflop.crazypainting.items.EaselItem;
 import com.github.omoflop.crazypainting.items.PaletteItem;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,23 +35,23 @@ public class CrazyItems {
 
     public static void register() {
         for (Map.Entry<Identifier, Item> entry : deferredRegistry.entrySet()) {
-            Registry.register(Registries.ITEM, entry.getKey(), entry.getValue());
+            Registry.register(BuiltInRegistries.ITEM, entry.getKey(), entry.getValue());
         }
         deferredRegistry.clear();
         deferredRegistry = null;
 
-        ItemGroup group = FabricItemGroup.builder()
+        CreativeModeTab group = FabricItemGroup.builder()
                 .icon(PaletteItem::createFullPalette)
-                .displayName(Text.of("Crazy Painting"))
-                .entries(((displayContext, entries) -> {
-                    entries.add(EASEL_ITEM);
-                    entries.add(PALETTE_ITEM);
+                .title(Component.nullToEmpty("Crazy Painting"))
+                .displayItems(((displayContext, entries) -> {
+                    entries.accept(EASEL_ITEM);
+                    entries.accept(PALETTE_ITEM);
                     for (CanvasItem canvas : allCanvases) {
-                        entries.add(new ItemStack(canvas));
+                        entries.accept(new ItemStack(canvas));
                     }
                 }))
                 .build();
-        Registry.register(Registries.ITEM_GROUP, CrazyPainting.id("main"), group);
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CrazyPainting.id("main"), group);
     }
 
     private static <T extends Item & Identifiable> T register(T item) {

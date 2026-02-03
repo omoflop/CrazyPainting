@@ -21,11 +21,7 @@
     ]
   },
   "mixins": [
-    "crazypainting.mixins.json",
-    {
-      "config": "crazypainting.client.mixins.json",
-      "environment": "client"
-    }
+    "crazypainting.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",

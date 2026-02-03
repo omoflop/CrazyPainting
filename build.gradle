@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.11-SNAPSHOT'
+    id 'fabric-loom' version '1.14-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -10,21 +10,14 @@ base {
     archivesName = project.archives_base_name
 }
 
-loom {
-    splitEnvironmentSourceSets()
-
-    mods {
-        "crazypainting" {
-            sourceSet sourceSets.main
-            sourceSet sourceSets.client
-        }
-    }
-}
-
 fabricApi {
     configureDataGeneration {
         client = true
     }
+}
+
+loom {
+    //accessWidenerPath = file("src/main/resources/crazypainting.classtweaker")
 }
 
 repositories {
@@ -34,10 +27,11 @@ repositories {
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
     modCompileOnly "maven.modrinth:iris:${project.iris_version}"
 
@@ -45,6 +39,7 @@ dependencies {
     implementation 'me.saharnooby:qoi-java-awt:1.2.1'
     include 'me.saharnooby:qoi-java:1.2.1'
     include 'me.saharnooby:qoi-java-awt:1.2.1'
+
 }
 
 processResources {

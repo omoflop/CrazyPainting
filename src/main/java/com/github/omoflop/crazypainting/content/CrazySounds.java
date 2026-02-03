@@ -1,11 +1,10 @@
 package com.github.omoflop.crazypainting.content;
 
 import com.github.omoflop.crazypainting.CrazyPainting;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.sound.SoundEvent;
-
 import java.util.Optional;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.sounds.SoundEvent;
 
 public class CrazySounds {
     public static final SoundEvent COLOR_PICKER_USE = register("color_picker_use");
@@ -16,7 +15,7 @@ public class CrazySounds {
 
     private static SoundEvent register(String name, Optional<Float> optional) {
         SoundEvent soundEvent = new SoundEvent(CrazyPainting.id(name), optional);
-        Registry.register(Registries.SOUND_EVENT, soundEvent.id(), soundEvent);
+        Registry.register(BuiltInRegistries.SOUND_EVENT, soundEvent.location(), soundEvent);
         return soundEvent;
     }
 

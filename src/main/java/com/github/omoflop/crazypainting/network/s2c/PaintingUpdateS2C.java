@@ -2,25 +2,25 @@ package com.github.omoflop.crazypainting.network.s2c;
 
 import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.network.types.PaintingData;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public record PaintingUpdateS2C(int id, PaintingData data) implements CustomPayload {
-    public static final Id<PaintingUpdateS2C> ID = new Id<>(CrazyPainting.id("painting_update"));
-    public static final PacketCodec<PacketByteBuf, PaintingUpdateS2C> CODEC = PacketCodec.of(PaintingUpdateS2C::encode, PaintingUpdateS2C::decode);
+public record PaintingUpdateS2C(int id, PaintingData data) implements CustomPacketPayload {
+    public static final Type<PaintingUpdateS2C> ID = new Type<>(CrazyPainting.id("painting_update"));
+    public static final StreamCodec<FriendlyByteBuf, PaintingUpdateS2C> CODEC = StreamCodec.ofMember(PaintingUpdateS2C::encode, PaintingUpdateS2C::decode);
 
-    private void encode(PacketByteBuf buf) {
+    private void encode(FriendlyByteBuf buf) {
         buf.writeInt(id);
         data.writeTo(buf);
     }
 
-    private static PaintingUpdateS2C decode(PacketByteBuf buf) {
+    private static PaintingUpdateS2C decode(FriendlyByteBuf buf) {
         return new PaintingUpdateS2C(buf.readInt(), PaintingData.readFrom(buf));
     }
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return ID;
     }
 }

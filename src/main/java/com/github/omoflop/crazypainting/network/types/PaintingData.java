@@ -1,21 +1,20 @@
 package com.github.omoflop.crazypainting.network.types;
 
 import com.github.omoflop.crazypainting.content.CrazyNetworking;
-import net.minecraft.network.PacketByteBuf;
-
 import javax.imageio.ImageIO;
+import net.minecraft.network.FriendlyByteBuf;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 public record PaintingData(byte[] data, PaintingSize size, PaintingId id) {
-    public void writeTo(PacketByteBuf buf) {
+    public void writeTo(FriendlyByteBuf buf) {
         CrazyNetworking.writeByteArray(buf, data);
         size.writeTo(buf);
         id.writeTo(buf);
     }
 
-    public static PaintingData readFrom(PacketByteBuf buf) {
+    public static PaintingData readFrom(FriendlyByteBuf buf) {
         return new PaintingData(
                 CrazyNetworking.readByteArray(buf),
                 PaintingSize.readFrom(buf),

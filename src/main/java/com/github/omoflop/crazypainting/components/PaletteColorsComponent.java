@@ -4,20 +4,19 @@ import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.component.ComponentsAccess;
-import net.minecraft.item.Item;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipProvider;
 
-public record PaletteColorsComponent(List<Integer> colors) implements TooltipAppender {
+public record PaletteColorsComponent(List<Integer> colors) implements TooltipProvider {
 
     public static final Codec<PaletteColorsComponent> CODEC = RecordCodecBuilder.create(builder -> builder.group(
             Codec.list(Codec.INT).fieldOf("colors").forGetter(PaletteColorsComponent::colors)
@@ -41,23 +40,23 @@ public record PaletteColorsComponent(List<Integer> colors) implements TooltipApp
     }
 
     @Override
-    public void appendTooltip(Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type, ComponentsAccess components) {
+    public void addToTooltip(Item.TooltipContext context, Consumer<Component> textConsumer, TooltipFlag type, DataComponentGetter components) {
         PaletteColorsComponent data = components.get(CrazyComponents.PALETTE_COLORS);
         assert data != null;
 
 
         if (data.colors == null || data.colors.isEmpty()) {
-            textConsumer.accept(Text.translatable("item.crazypainting.palette.tooltip.empty").formatted(Formatting.GRAY, Formatting.ITALIC));
+            textConsumer.accept(Component.translatable("item.crazypainting.palette.tooltip.empty").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
             return;
         }
 
-        MutableText text = (Text.translatable("item.crazypainting.palette.tooltip.colors").append(": ").formatted(Formatting.BLUE));
+        MutableComponent text = (Component.translatable("item.crazypainting.palette.tooltip.colors").append(": ").withStyle(ChatFormatting.BLUE));
         for (int i = 0; i < data.colors.size(); i++) {
             int color = data.colors.get(i);
             if (color == CrazyPainting.TRANSPARENT) {
-                text.append(Text.translatable("item.crazypainting.palette.tooltip.color_entry.transparent").formatted(Formatting.WHITE));
+                text.append(Component.translatable("item.crazypainting.palette.tooltip.color_entry.transparent").withStyle(ChatFormatting.WHITE));
             } else {
-                text.append(Text.translatable("item.crazypainting.palette.tooltip.color_entry").withColor(data.colors.get(i)));
+                text.append(Component.translatable("item.crazypainting.palette.tooltip.color_entry").withColor(data.colors.get(i)));
 
             }
         }

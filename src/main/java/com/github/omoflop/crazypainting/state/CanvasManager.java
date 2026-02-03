@@ -8,11 +8,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.WorldSavePath;
-import net.minecraft.world.PersistentState;
-import net.minecraft.world.PersistentStateType;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
+import net.minecraft.world.level.storage.LevelResource;
 import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
@@ -24,7 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-public class CanvasManager extends PersistentState {
+public class CanvasManager extends SavedData {
     public static final Codec<CanvasManager> CODEC = RecordCodecBuilder.create(builder -> builder.group(
             Codec.INT.fieldOf("next_id").forGetter((self) -> self.nextId)
     ).apply(builder, CanvasManager::new));
@@ -50,11 +50,11 @@ public class CanvasManager extends PersistentState {
     }
 
     public static CanvasManager getServerState(MinecraftServer server) {
-        PersistentStateType<CanvasManager> type = new PersistentStateType<>(ID, CanvasManager::createNew, CODEC, null);
+        SavedDataType<CanvasManager> type = new SavedDataType<>(ID, CanvasManager::createNew, CODEC, null);
 
         // Migrate old CanvasManager dat file
         {
-            Path dataDir = server.getSavePath(WorldSavePath.ROOT).resolve("data");
+            Path dataDir = server.getWorldPath(LevelResource.ROOT).resolve("data");
             File oldFile = new File(dataDir.toFile(), OLD_ID + ".dat"); // Need to use lenient java.io.File API for potentially illegal names
             Path newFile = dataDir.resolve(ID + ".dat");
 
@@ -65,13 +65,13 @@ public class CanvasManager extends PersistentState {
                     CrazyPainting.LOGGER.info("Successfully migrated CanvasManager dat to new filename");
                 } catch (IOException e) {
                     CrazyPainting.LOGGER.error("Failed to migrate CanvasManager dat file, sticking with old one", e);
-                    type = new PersistentStateType<>(OLD_ID, CanvasManager::createNew, CODEC, null);
+                    type = new SavedDataType<>(OLD_ID, CanvasManager::createNew, CODEC, null);
                 }
             }
         }
 
-        CanvasManager canvasManager = Objects.requireNonNull(server.getWorld(World.OVERWORLD)).getPersistentStateManager().getOrCreate(type);
-        canvasManager.markDirty();
+        CanvasManager canvasManager = Objects.requireNonNull(server.getLevel(Level.OVERWORLD)).getDataStorage().computeIfAbsent(type);
+        canvasManager.setDirty();
         return canvasManager;
     }
 
@@ -82,7 +82,7 @@ public class CanvasManager extends PersistentState {
     }
 
     public static @Nullable PaintingData load(int canvasId, MinecraftServer server) throws IOException {
-        Path savePath = server.getSavePath(WorldSavePath.ROOT).resolve("data/crazy_paintings");
+        Path savePath = server.getWorldPath(LevelResource.ROOT).resolve("data/crazy_paintings");
         Files.createDirectories(savePath);
         Path paintingPath = savePath.resolve("painting_" + canvasId + ".qoi");
 
@@ -118,14 +118,14 @@ public class CanvasManager extends PersistentState {
         }
     }
 
-    public static void receive(PaintingData data, MinecraftServer server, ServerPlayerEntity sender) throws IOException {
-        Path savePath = server.getSavePath(WorldSavePath.ROOT).resolve("data/crazy_paintings");
+    public static void receive(PaintingData data, MinecraftServer server, ServerPlayer sender) throws IOException {
+        Path savePath = server.getWorldPath(LevelResource.ROOT).resolve("data/crazy_paintings");
         Files.createDirectories(savePath);
         Path paintingPath = savePath.resolve("painting_" + data.id().value() + ".qoi");
 
         Files.write(paintingPath, data.data());
 
-        for (ServerPlayerEntity player : sender.getWorld().getPlayers()) {
+        for (ServerPlayer player : sender.level().players()) {
             if (player.equals(sender)) continue;
             ServerPlayNetworking.send(player, new PaintingCanUpdateS2C(data.id().value()));
         }

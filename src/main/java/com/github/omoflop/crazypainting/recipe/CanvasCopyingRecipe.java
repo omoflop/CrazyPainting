@@ -4,31 +4,30 @@ import com.github.omoflop.crazypainting.components.CanvasDataComponent;
 import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.content.CrazyRecipes;
 import com.github.omoflop.crazypainting.items.CanvasItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialCraftingRecipe;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
-
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 
-public class CanvasCopyingRecipe extends SpecialCraftingRecipe {
-    public CanvasCopyingRecipe(CraftingRecipeCategory category) {
+public class CanvasCopyingRecipe extends CustomRecipe {
+    public CanvasCopyingRecipe(CraftingBookCategory category) {
         super(category);
     }
 
     @Override
-    public boolean matches(CraftingRecipeInput input, World world) {
-        return gatherMatchingCanvases(input.getStacks()).isPresent();
+    public boolean matches(CraftingInput input, Level world) {
+        return gatherMatchingCanvases(input.items()).isPresent();
     }
 
     @Override
-    public ItemStack craft(CraftingRecipeInput input, RegistryWrapper.WrapperLookup registries) {
-        Optional<Match> result = gatherMatchingCanvases(input.getStacks());
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+        Optional<Match> result = gatherMatchingCanvases(input.items());
         if (result.isEmpty()) return ItemStack.EMPTY; // This shouldn't happen
         Match match = result.get();
 
@@ -42,11 +41,11 @@ public class CanvasCopyingRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public DefaultedList<ItemStack> getRecipeRemainders(CraftingRecipeInput input) {
-        DefaultedList<ItemStack> list = DefaultedList.ofSize(input.size(), ItemStack.EMPTY);
+    public NonNullList<ItemStack> getRemainingItems(CraftingInput input) {
+        NonNullList<ItemStack> list = NonNullList.withSize(input.size(), ItemStack.EMPTY);
 
         for (int i = 0; i < list.size(); i++) {
-            ItemStack stack = input.getStackInSlot(i);
+            ItemStack stack = input.getItem(i);
             if (CanvasItem.isSigned(stack)) {
                 ItemStack copy = stack.copy();
                 copy.setCount(1);
@@ -59,7 +58,7 @@ public class CanvasCopyingRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public RecipeSerializer<? extends SpecialCraftingRecipe> getSerializer() {
+    public RecipeSerializer<? extends CustomRecipe> getSerializer() {
         return CrazyRecipes.CANVAS_COPYING;
     }
 

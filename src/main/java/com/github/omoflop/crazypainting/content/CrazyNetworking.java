@@ -14,8 +14,7 @@ import com.github.omoflop.crazypainting.network.s2c.PaintingUpdateS2C;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.PacketByteBuf;
-
+import net.minecraft.network.FriendlyByteBuf;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -54,7 +53,7 @@ public class CrazyNetworking {
         return Files.readAllBytes(rootPath.resolve("painting_" + id + ".png"));
     }
 
-    public static byte[] readByteArray(PacketByteBuf buf) {
+    public static byte[] readByteArray(FriendlyByteBuf buf) {
         int length = buf.readInt();
 
         ByteBuf bb = buf.readBytes(length);
@@ -64,7 +63,7 @@ public class CrazyNetworking {
         return arr;
     }
 
-    public static void writeByteArray(PacketByteBuf buf, byte[] bytes) {
+    public static void writeByteArray(FriendlyByteBuf buf, byte[] bytes) {
         buf.writeInt(bytes.length);
         buf.writeBytes(bytes);
     }
