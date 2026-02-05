@@ -12,6 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -31,19 +32,21 @@ public class CanvasSpecialRenderer implements SpecialModelRenderer<CanvasSpecial
     public void submit(@NotNull Data data, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, boolean bl, int k) {
 
         Optional<Identifier> textureId = CanvasRenderer.tryGetCanvasId(data.canvasId);
-        if (textureId.isEmpty()) return;
+
+
+        if (textureId.isEmpty()) {
+            textureId = Optional.of(CrazyPainting.id("textures/entity/easel/canvas.png"));
+        }
 
         poseStack.pushPose();
         boolean glow = displayContext == ItemDisplayContext.GUI || data.glow();
         RenderType canvasRenderType = CanvasRenderer.getRenderType(textureId.get(), glow);
 
+
         //poseStack.mulPose(Axis.YP.rotationDegrees(180));
         CanvasRenderer.prepareForItem(poseStack, displayContext == ItemDisplayContext.GUI, displayContext, data.width, data.height);
 
         submitNodeCollector.submitCustomGeometry(poseStack, canvasRenderType, (pose, vertexConsumer) -> {
-
-
-
             CanvasRenderer.submitFront(vertexConsumer, pose, data.width, data.height, i);
         });
 

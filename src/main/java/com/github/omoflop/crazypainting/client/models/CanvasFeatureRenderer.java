@@ -32,7 +32,7 @@ public class CanvasFeatureRenderer<S extends EntityRenderState & ItemDisplaying,
             poseStack.scale(2, 2, .66f);
         }
 
-        state.getDisplayItemState().submit(poseStack, submitNodeCollector, i, OverlayTexture.NO_OVERLAY, 1);
+        state.getDisplayItemState().submit(poseStack, submitNodeCollector, i, OverlayTexture.NO_OVERLAY, state.outlineColor);
         poseStack.popPose();
     }
 

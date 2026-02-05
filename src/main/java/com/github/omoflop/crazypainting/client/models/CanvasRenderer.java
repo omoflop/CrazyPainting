@@ -69,7 +69,7 @@ public final class CanvasRenderer {
             if (IrisCompat.isShaderEnabled()) {
                 return (RenderTypes.eyes(textureId));
             } else {
-                return (RenderTypes.entityCutout(textureId));
+                return (RenderTypes.beaconBeam(textureId, true));
             }
         } else {
             return (RenderTypes.itemEntityTranslucentCull(textureId));

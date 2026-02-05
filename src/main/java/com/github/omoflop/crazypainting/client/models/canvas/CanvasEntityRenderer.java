@@ -45,6 +45,7 @@ public class CanvasEntityRenderer extends EntityRenderer<CanvasEntity, CanvasEnt
     public void submit(CanvasEntityRenderState state, PoseStack matrices, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState) {
         if (!(state.displayItem.getItem() instanceof CanvasItem canvas)) return;
 
+
         matrices.pushPose();
         float f;
         float g;
