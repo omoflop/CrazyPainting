@@ -76,6 +76,10 @@ public final class CanvasRenderer {
         }
     }
 
+    public static RenderType getBackRenderType() {
+        return RenderTypes.entitySolid(BACK);
+    }
+
     public static void submitFront(VertexConsumer consumer, PoseStack.Pose pose, int width, int height, int light) {
         Matrix4f m = pose.pose();
         Vector3f normal = new Vector3f(0, 0, -1f);
@@ -84,6 +88,20 @@ public final class CanvasRenderer {
         addVertex(consumer, m, pose, 16*width, 16*height, -1.5f, 1f, 1f, light, normal);
         addVertex(consumer, m, pose, 16*width, 0,         -1.5f, 1f, 0f, light, normal);
         addVertex(consumer, m, pose, 0,        0,         -1.5f, 0f, 0f, light, normal);
+    }
+
+    public static void submitBack(VertexConsumer consumer, PoseStack.Pose pose, int width, int height, int light) {
+        Matrix4f m = pose.pose();
+        Vector3f normal = new Vector3f(0, 0, -1f);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                addVertex(consumer, m, pose, x*16,     y*16,       -1.4f, 0f, 0f, light, normal);
+                addVertex(consumer, m, pose, x*16 + 16, y*16,      -1.4f, 1f, 0f, light, normal);
+                addVertex(consumer, m, pose, x*16 + 16, y*16 + 16, -1.4f, 1f, 1f, light, normal);
+                addVertex(consumer, m, pose, x*16,      y*16 + 16, -1.4f, 0f, 1f, light, normal);
+            }
+        }
     }
 
     public static void renderVertices(MultiBufferSource vertexConsumers, PoseStack matrices, boolean drawBack, Identifier textureId, int width, int height, boolean glow, int light) {

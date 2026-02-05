@@ -30,9 +30,7 @@ public class CanvasSpecialRenderer implements SpecialModelRenderer<CanvasSpecial
 
     @Override
     public void submit(@NotNull Data data, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, boolean bl, int k) {
-
         Optional<Identifier> textureId = CanvasRenderer.tryGetCanvasId(data.canvasId);
-
 
         if (textureId.isEmpty()) {
             textureId = Optional.of(CrazyPainting.id("textures/entity/easel/canvas.png"));
@@ -40,14 +38,14 @@ public class CanvasSpecialRenderer implements SpecialModelRenderer<CanvasSpecial
 
         poseStack.pushPose();
         boolean glow = displayContext == ItemDisplayContext.GUI || data.glow();
-        RenderType canvasRenderType = CanvasRenderer.getRenderType(textureId.get(), glow);
 
-
-        //poseStack.mulPose(Axis.YP.rotationDegrees(180));
         CanvasRenderer.prepareForItem(poseStack, displayContext == ItemDisplayContext.GUI, displayContext, data.width, data.height);
-
-        submitNodeCollector.submitCustomGeometry(poseStack, canvasRenderType, (pose, vertexConsumer) -> {
+        submitNodeCollector.submitCustomGeometry(poseStack, CanvasRenderer.getRenderType(textureId.get(), glow), (pose, vertexConsumer) -> {
             CanvasRenderer.submitFront(vertexConsumer, pose, data.width, data.height, i);
+        });
+
+        submitNodeCollector.submitCustomGeometry(poseStack, CanvasRenderer.getBackRenderType(), (pose, vertexConsumer) -> {
+            CanvasRenderer.submitBack(vertexConsumer, pose, data.width, data.height, i);
         });
 
         poseStack.popPose();
