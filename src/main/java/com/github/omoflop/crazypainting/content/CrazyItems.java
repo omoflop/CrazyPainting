@@ -2,6 +2,7 @@ package com.github.omoflop.crazypainting.content;
 
 import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.Identifiable;
+import com.github.omoflop.crazypainting.components.PaletteColorsComponent;
 import com.github.omoflop.crazypainting.items.CanvasItem;
 import com.github.omoflop.crazypainting.items.EaselItem;
 import com.github.omoflop.crazypainting.items.PaletteItem;
@@ -13,10 +14,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 public class CrazyItems {
     public static final List<CanvasItem> allCanvases = new ArrayList<>();
@@ -45,7 +44,10 @@ public class CrazyItems {
                 .title(Component.nullToEmpty("Crazy Painting"))
                 .displayItems(((displayContext, entries) -> {
                     entries.accept(EASEL_ITEM);
-                    entries.accept(PALETTE_ITEM);
+                    ItemStack fullPalette = new ItemStack(PALETTE_ITEM);
+                    fullPalette.set(CrazyComponents.PALETTE_COLORS, PaletteColorsComponent.filled());
+
+                    entries.accept(fullPalette);
                     for (CanvasItem canvas : allCanvases) {
                         entries.accept(new ItemStack(canvas));
                     }

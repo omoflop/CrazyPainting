@@ -26,6 +26,14 @@ public record PaletteColorsComponent(List<Integer> colors) implements TooltipPro
         return new PaletteColorsComponent(new ArrayList<>());
     }
 
+    public static PaletteColorsComponent filled() {
+        ArrayList<Integer> list = new ArrayList<>();
+        for (int i : CrazyPainting.VANILLA_COLOR_ORDER) {
+            list.add(i);
+        }
+        return new PaletteColorsComponent(list);
+    }
+
     public static void sort(ArrayList<Integer> palette) {
         List<Integer> colors = Arrays.stream(CrazyPainting.VANILLA_COLOR_ORDER).boxed().toList();
         palette.sort((a, b) -> {

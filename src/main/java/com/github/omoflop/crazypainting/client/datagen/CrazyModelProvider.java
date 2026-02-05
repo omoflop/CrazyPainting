@@ -62,7 +62,7 @@ public class CrazyModelProvider extends FabricModelProvider {
     private void registerPalette(ItemModelGenerators gen, PaletteItem item) {
         var modelFilled = ItemModelUtils.plainModel(ModelLocationUtils.getModelLocation(item, "_filled"));
         var model = ItemModelUtils.plainModel(ModelLocationUtils.getModelLocation(item));
-        //gen.generateBooleanDispatch(item, new PaletteHasColorsProperty((byte)1), modelFilled, model);
+        gen.generateBooleanDispatch(item, new HasComponent(CrazyComponents.PALETTE_COLORS, true), modelFilled, model);
         gen.createFlatItemModel(item, "", ModelTemplates.FLAT_ITEM); // ???? lol
         gen.createFlatItemModel(item, "_filled", ModelTemplates.FLAT_ITEM);
     }

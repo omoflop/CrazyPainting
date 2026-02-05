@@ -1,10 +1,10 @@
-// 1.21.7	-999999999-01-01T00:00:00	CrazyPainting/Model Definitions
+// 1.21.11	-999999999-01-01T00:00:00	CrazyPainting/Model Definitions
 022239b1db6c661efcefefe482e184d2c3d27fab assets/crazypainting/items/big_canvas.json
 a2a62192ee853d459b070e1a020331d1ed6a20a0 assets/crazypainting/items/easel.json
 96bcd8d3a31c390d74e2f8b7e1328e853acd1b23 assets/crazypainting/items/large_canvas.json
 c511dce6b92baac01a83cece9e1773a2ff4d5a2e assets/crazypainting/items/long_canvas.json
 0d048d098c6164e0d85d34beeaa42b86731bdffa assets/crazypainting/items/longer_canvas.json
-79b107570865ae6d7deed2dcac16b9f495d0bcef assets/crazypainting/items/palette.json
+57fec8bb52e8915a7c4ce4f1dfc53f1d51322884 assets/crazypainting/items/palette.json
 d33a3c1948d032db84faa0c29c8d04f76196deb1 assets/crazypainting/items/small_canvas.json
 490095c3999b01dd76f7631700cc99055210ab90 assets/crazypainting/items/tall_canvas.json
 7e2d750068033c4ff8cb9725af40fc1443de2132 assets/crazypainting/items/taller_canvas.json

@@ -78,7 +78,7 @@ public final class CanvasRenderer {
 
     public static void submitFront(VertexConsumer consumer, PoseStack.Pose pose, int width, int height, int light) {
         Matrix4f m = pose.pose();
-        Vector3f normal = Direction.NORTH.step();
+        Vector3f normal = new Vector3f(0, 0, -1f);
 
         addVertex(consumer, m, pose, 0,        16*height, -1.5f, 0f, 1f, light, normal);
         addVertex(consumer, m, pose, 16*width, 16*height, -1.5f, 1f, 1f, light, normal);

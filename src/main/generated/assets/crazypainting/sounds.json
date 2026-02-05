@@ -1,6 +1,5 @@
 {
   "brush_use": {
-    "category": "ui",
     "sounds": [
       "crazypainting:brush0",
       "crazypainting:brush1",
@@ -12,14 +11,12 @@
     "subtitle": "subtitles.crazypainting.brush_use"
   },
   "color_picker_use": {
-    "category": "ui",
     "sounds": [
       "crazypainting:pick_color"
     ],
     "subtitle": "subtitles.crazypainting.color_picker_use"
   },
   "undo": {
-    "category": "ui",
     "sounds": [
       {
         "type": "event",

@@ -6,10 +6,12 @@ import com.github.omoflop.crazypainting.components.CanvasDataComponent;
 import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.items.CanvasItem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -33,12 +35,16 @@ public class CanvasSpecialRenderer implements SpecialModelRenderer<CanvasSpecial
 
         poseStack.pushPose();
         boolean glow = displayContext == ItemDisplayContext.GUI || data.glow();
+        RenderType canvasRenderType = CanvasRenderer.getRenderType(textureId.get(), glow);
 
-        submitNodeCollector.submitCustomGeometry(poseStack, CanvasRenderer.getRenderType(textureId.get(), glow), (pose, vertexConsumer) -> {
-            poseStack.pushPose();
-            CanvasRenderer.prepareForItem(poseStack, displayContext == ItemDisplayContext.GUI, displayContext, data.width, data.height);
+        //poseStack.mulPose(Axis.YP.rotationDegrees(180));
+        CanvasRenderer.prepareForItem(poseStack, displayContext == ItemDisplayContext.GUI, displayContext, data.width, data.height);
+
+        submitNodeCollector.submitCustomGeometry(poseStack, canvasRenderType, (pose, vertexConsumer) -> {
+
+
+
             CanvasRenderer.submitFront(vertexConsumer, pose, data.width, data.height, i);
-            poseStack.popPose();
         });
 
         poseStack.popPose();

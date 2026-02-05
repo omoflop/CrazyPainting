@@ -72,7 +72,7 @@ public class CanvasEntityRenderer extends EntityRenderer<CanvasEntity, CanvasEnt
 
         float scale = 1.03f;
 
-        state.displayItemState.submit(matrices, submitNodeCollector, 1, OverlayTexture.NO_OVERLAY, 1);
+        state.displayItemState.submit(matrices, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
         matrices.popPose();
 
         super.submit(state, matrices, submitNodeCollector, cameraRenderState);
