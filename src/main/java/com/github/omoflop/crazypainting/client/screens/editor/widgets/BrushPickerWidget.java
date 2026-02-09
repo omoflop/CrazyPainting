@@ -64,9 +64,9 @@ public class BrushPickerWidget extends EditorWidget implements Renderable, Mouse
         if (mouseHovered)
             context.fill(x, y, x+width, y+height, CrazyPainting.LIGHT_GRAY);
 
-        int textColor = CrazyPainting.LIME;
+        int textColor = CrazyPainting.WHITE;
         if (state.brushCategory.equals(category)) {
-            textColor = CrazyPainting.WHITE;
+            textColor = CrazyPainting.LIME;
         }
 
         context.drawString(textRenderer, text, x, y, textColor);
