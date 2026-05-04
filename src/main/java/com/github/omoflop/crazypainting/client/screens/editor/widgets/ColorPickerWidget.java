@@ -8,13 +8,14 @@ import com.github.omoflop.crazypainting.client.screens.editor.types.EditorState;
 import com.github.omoflop.crazypainting.client.screens.editor.types.EditorWidget;
 import com.github.omoflop.crazypainting.client.screens.editor.types.MouseListener;
 import com.github.omoflop.crazypainting.client.screens.editor.types.Renderable;
-import java.util.Collection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+
+import java.util.Collection;
 
 import static com.github.omoflop.crazypainting.client.CrazyPaintingClient.click;
 
@@ -37,10 +38,10 @@ public class ColorPickerWidget extends EditorWidget implements Renderable, Mouse
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
-        context.drawCenteredString(textRenderer, PALETTE_TEXT, centerX(), top() - textRenderer.lineHeight, CrazyPainting.YELLOW);
+    public void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
+        context.centeredText(textRenderer, PALETTE_TEXT, centerX(), top() - textRenderer.lineHeight, CrazyPainting.YELLOW);
         if (colors.isEmpty()) {
-            context.drawWordWrap(textRenderer, PALETTE_EMPTY_TEXT, x, y, width, CrazyPainting.RED, false);
+            context.textWithWordWrap(textRenderer, PALETTE_EMPTY_TEXT, x, y, width, CrazyPainting.RED, false);
             return;
         }
 
@@ -51,14 +52,14 @@ public class ColorPickerWidget extends EditorWidget implements Renderable, Mouse
         rightJustPressed = false;
     }
 
-    private void drawBottomArea(GuiGraphics context) {
+    private void drawBottomArea(GuiGraphicsExtractor context) {
         final int size = (int) (textRenderer.lineHeight * 1.5f);
         int y2 = bottom() - size * 2;
 
         if (colors.contains(state.primaryColor) || CrazyPainting.isNotVanillaColor(state.primaryColor)) {
             Component text = Component.literal(ColorHelper.hexString(state.primaryColor));
             drawColorBox(context, x, y2, width, size, CrazyPainting.LIGHT_GRAY, state.primaryColor);
-            context.drawString(textRenderer, text, x + width/2 - textRenderer.width(text) / 2, y2 + 3, ColorHelper.contrast(state.primaryColor), false);
+            context.text(textRenderer, text, x + width/2 - textRenderer.width(text) / 2, y2 + 3, ColorHelper.contrast(state.primaryColor), false);
 
         }
 
@@ -66,12 +67,12 @@ public class ColorPickerWidget extends EditorWidget implements Renderable, Mouse
             y2 += size;
             Component text = Component.literal(ColorHelper.hexString(state.secondaryColor));
             drawColorBox(context, x, y2, width, size, CrazyPainting.GRAY, state.secondaryColor);
-            context.drawString(textRenderer, text, x + width/2 - textRenderer.width(text)/2, y2+3, ColorHelper.contrast(state.secondaryColor), false);
+            context.text(textRenderer, text, x + width/2 - textRenderer.width(text)/2, y2+3, ColorHelper.contrast(state.secondaryColor), false);
         }
 
     }
 
-    private void drawPalette(GuiGraphics context, int mouseX, int mouseY) {
+    private void drawPalette(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         final int size = 12;
 
         int xx = x + 2;
@@ -112,7 +113,7 @@ public class ColorPickerWidget extends EditorWidget implements Renderable, Mouse
         }
     }
 
-    private boolean drawOpacityBox(GuiGraphics context, int mouseX, int mouseY, int x, int y, int width, int height, float opacity) {
+    private boolean drawOpacityBox(GuiGraphicsExtractor context, int mouseX, int mouseY, int x, int y, int width, int height, float opacity) {
 
         boolean isSelected = state.opacity == opacity;
 
@@ -134,7 +135,7 @@ public class ColorPickerWidget extends EditorWidget implements Renderable, Mouse
         return isMouseOver;
     }
 
-    private boolean drawPaletteBox(GuiGraphics context, int mouseX, int mouseY, int x, int y, int width, int height, int color) {
+    private boolean drawPaletteBox(GuiGraphicsExtractor context, int mouseX, int mouseY, int x, int y, int width, int height, int color) {
         boolean isPrimary = color == state.primaryColor;
         boolean isSecondary = color == state.secondaryColor;
         boolean isMouseOver = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
@@ -150,7 +151,7 @@ public class ColorPickerWidget extends EditorWidget implements Renderable, Mouse
         return isMouseOver;
     }
 
-    private boolean drawToolBox(GuiGraphics context, int mouseX, int mouseY, int x, int y, int width, int height, boolean selected, int u, int v, int w, int h) {
+    private boolean drawToolBox(GuiGraphicsExtractor context, int mouseX, int mouseY, int x, int y, int width, int height, boolean selected, int u, int v, int w, int h) {
         boolean isMouseOver = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 
         int borderColor = selected ? CrazyPainting.WHITE : CrazyPainting.BLACK;
@@ -164,7 +165,7 @@ public class ColorPickerWidget extends EditorWidget implements Renderable, Mouse
         return isMouseOver;
     }
 
-    private void drawColorBox(GuiGraphics context, int x, int y, int width, int height, int borderColor, int innerColor, int backgroundColor) {
+    private void drawColorBox(GuiGraphicsExtractor context, int x, int y, int width, int height, int borderColor, int innerColor, int backgroundColor) {
         Renderable.drawBorder(context, x, y, width, height, borderColor);
 
         if (backgroundColor != CrazyPainting.TRANSPARENT) {
@@ -180,7 +181,7 @@ public class ColorPickerWidget extends EditorWidget implements Renderable, Mouse
         }
     }
 
-    private void drawColorBox(GuiGraphics context, int x, int y, int width, int height, int borderColor, int innerColor) {
+    private void drawColorBox(GuiGraphicsExtractor context, int x, int y, int width, int height, int borderColor, int innerColor) {
         drawColorBox(context, x, y, width, height, borderColor, innerColor, CrazyPainting.TRANSPARENT);
     }
 

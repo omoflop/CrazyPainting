@@ -1,23 +1,16 @@
 plugins {
-    id 'fabric-loom' version '1.14-SNAPSHOT'
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
 }
 
 version = project.mod_version
 group = project.maven_group
 
-base {
-    archivesName = project.archives_base_name
-}
-
 fabricApi {
     configureDataGeneration {
         client = true
+        modId = project.archives_base_name
     }
-}
-
-loom {
-    //accessWidenerPath = file("src/main/resources/crazypainting.classtweaker")
 }
 
 repositories {
@@ -27,18 +20,15 @@ repositories {
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    modCompileOnly "maven.modrinth:iris:${project.iris_version}"
+    compileOnly "maven.modrinth:iris:${project.iris_version}"
 
-    implementation 'me.saharnooby:qoi-java:1.2.1'
-    implementation 'me.saharnooby:qoi-java-awt:1.2.1'
-    include 'me.saharnooby:qoi-java:1.2.1'
-    include 'me.saharnooby:qoi-java-awt:1.2.1'
+    include implementation('me.saharnooby:qoi-java:1.2.1')
+    include implementation('me.saharnooby:qoi-java-awt:1.2.1')
 
 }
 
@@ -55,7 +45,7 @@ processResources {
     }
 }
 
-def targetJavaVersion = 21
+def targetJavaVersion = 25
 tasks.withType(JavaCompile).configureEach {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
     // this fixes some edge cases with special characters not displaying correctly

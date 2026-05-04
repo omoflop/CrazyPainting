@@ -4,14 +4,15 @@ import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.client.screens.PaintingEditorScreen;
 import com.github.omoflop.crazypainting.client.screens.editor.types.EditorWidget;
 import com.github.omoflop.crazypainting.client.screens.editor.types.Renderable;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HelpWidget extends EditorWidget implements Renderable {
     private final Font textRenderer;
@@ -21,7 +22,7 @@ public class HelpWidget extends EditorWidget implements Renderable {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
         context.fill(x + 1, y + 1, x + width - 2, y + height - 2, CrazyPainting.WHITE);
         Renderable.drawBorder(context, x - 1, y - 1, width + 1, height + 1, CrazyPainting.BLACK);
 
@@ -44,11 +45,11 @@ public class HelpWidget extends EditorWidget implements Renderable {
             }
 
             int height = textRenderer.lineHeight * lines.size();
-            TooltipRenderUtil.renderTooltipBackground(context, mouseX+8, mouseY+8, width, height, null);
+            TooltipRenderUtil.extractTooltipBackground(context, mouseX+8, mouseY+8, width, height, null);
 
             int i = 0;
             for (Component line : lines) {
-                context.drawString(textRenderer, line, mouseX + 8, mouseY + i + 8, 0xFFFFFFFF, false);
+                context.text(textRenderer, line, mouseX + 8, mouseY + i + 8, 0xFFFFFFFF, false);
                 i += textRenderer.lineHeight;
             }
         }

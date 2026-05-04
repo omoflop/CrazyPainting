@@ -17,21 +17,23 @@ import com.github.omoflop.crazypainting.network.s2c.PaintingUpdateS2C;
 import com.github.omoflop.crazypainting.network.s2c.UpdateEaselCanvasIdS2C;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.special.SpecialModelRenderers;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.ItemDisplayContext;
 
 public class CrazyPaintingClient implements ClientModInitializer {
 
     public static final ModelLayerLocation CANVAS_MODEL_LAYER = new ModelLayerLocation(CrazyPainting.id("canvas"), "main");
     public static final ModelLayerLocation EASEL_MODEL_LAYER = new ModelLayerLocation(CrazyPainting.id("easel"), "main");
 
+	public static ItemDisplayContext displayContext = null;
 
     @Override
     public void onInitializeClient() {
@@ -40,11 +42,11 @@ public class CrazyPaintingClient implements ClientModInitializer {
         SpecialModelRenderers.ID_MAPPER.put(CanvasSpecialRenderer.SPECIAL_ID, CanvasSpecialRenderer.Unbaked.CODEC);
 
         // Register easel model
-        EntityModelLayerRegistry.registerModelLayer(EASEL_MODEL_LAYER, EaselEntityModel::getTexturedModelData);
+        ModelLayerRegistry.registerModelLayer(EASEL_MODEL_LAYER, EaselEntityModel::getTexturedModelData);
 
         // Register easel and canvas entity renderers
-        EntityRendererRegistry.register(CrazyEntities.EASEL_ENTITY_TYPE, (EaselEntityRenderer::new));
-        EntityRendererRegistry.register(CrazyEntities.CANVAS_ENTITY_TYPE, (CanvasEntityRenderer::new));
+        EntityRenderers.register(CrazyEntities.EASEL_ENTITY_TYPE, (EaselEntityRenderer::new));
+	    EntityRenderers.register(CrazyEntities.CANVAS_ENTITY_TYPE, (CanvasEntityRenderer::new));
 
         // Packet receivers
         ClientPlayNetworking.registerGlobalReceiver(PaintingChangeEvent.ID, new ClientPaintingChangeHandler());

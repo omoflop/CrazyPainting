@@ -4,21 +4,23 @@ import com.github.omoflop.crazypainting.components.CanvasDataComponent;
 import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.content.CrazyRecipes;
 import com.github.omoflop.crazypainting.items.CanvasItem;
-import java.util.List;
-import java.util.Optional;
-import net.minecraft.core.HolderLookup;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
+import java.util.Optional;
+
 public class CanvasCopyingRecipe extends CustomRecipe {
-    public CanvasCopyingRecipe(CraftingBookCategory category) {
-        super(category);
-    }
+	public static final CanvasCopyingRecipe INSTANCE = new CanvasCopyingRecipe();
+	public static final MapCodec<CanvasCopyingRecipe> MAP_CODEC = MapCodec.unit(INSTANCE);
+	public static final StreamCodec<RegistryFriendlyByteBuf, CanvasCopyingRecipe> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
     @Override
     public boolean matches(CraftingInput input, Level world) {
@@ -26,7 +28,7 @@ public class CanvasCopyingRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingInput input) {
         Optional<Match> result = gatherMatchingCanvases(input.items());
         if (result.isEmpty()) return ItemStack.EMPTY; // This shouldn't happen
         Match match = result.get();

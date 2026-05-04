@@ -1,15 +1,13 @@
 package com.github.omoflop.crazypainting.client.screens;
 
 import com.github.omoflop.crazypainting.CrazyPainting;
-import com.github.omoflop.crazypainting.client.ColorHelper;
 import com.github.omoflop.crazypainting.network.types.PaintingData;
 import com.github.omoflop.crazypainting.network.types.PaintingSize;
-import java.awt.*;
-import java.io.IOException;
-import java.util.Arrays;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+
+import java.io.IOException;
 
 public class PaintingViewerScreen extends Screen {
     private final int[] pixels;
@@ -32,8 +30,8 @@ public class PaintingViewerScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
-        super.render(context, mouseX, mouseY, deltaTicks);
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
+        super.extractRenderState(context, mouseX, mouseY, deltaTicks);
 
         int widthPixels = size.width() * 16;
         int heightPixels = size.height() * 16;
@@ -45,7 +43,7 @@ public class PaintingViewerScreen extends Screen {
         int canvasY = canvasPixelY * pixelSize;
 
         // Draw title
-        context.drawCenteredString(font, Component.literal(title), width / 2, 64, CrazyPainting.YELLOW);
+        context.centeredText(font, Component.literal(title), width / 2, 64, CrazyPainting.YELLOW);
 
         // Draw pixels
         for(int i = 0; i < pixels.length; i++) {

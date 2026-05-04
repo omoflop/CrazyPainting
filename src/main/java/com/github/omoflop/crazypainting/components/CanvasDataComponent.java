@@ -2,20 +2,16 @@ package com.github.omoflop.crazypainting.components;
 
 import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.items.CanvasItem;
-import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.commands.arguments.selector.SelectorPattern;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 
@@ -71,14 +67,7 @@ public record CanvasDataComponent(int id, boolean glow, String signedBy, String 
     }
 
     private void appendSignedByTooltip(CanvasDataComponent data, Consumer<Component> textConsumer) {
-        var selector = SelectorPattern.parse(data.signedBy);
-
-        var arg = Component.literal("Unknown");
-        if (selector.isSuccess()) {
-            arg = Component.selector(selector.getOrThrow(), Optional.empty());
-        }
-
-        textConsumer.accept(Component.translatable("item.crazypainting.canvas.tooltip.signed", arg).withStyle(ChatFormatting.YELLOW));
+        textConsumer.accept(Component.translatable("item.crazypainting.canvas.tooltip.signed", Component.literal(data.signedBy())).withStyle(ChatFormatting.YELLOW));
 
         if (this.generation >= 0)
             textConsumer.accept(Component.translatable("book.generation." + this.generation).withStyle(ChatFormatting.GRAY));

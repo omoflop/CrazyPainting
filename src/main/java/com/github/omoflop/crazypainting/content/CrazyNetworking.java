@@ -1,20 +1,21 @@
 package com.github.omoflop.crazypainting.content;
 
+import com.github.omoflop.crazypainting.network.c2s.RequestPaintingC2S;
 import com.github.omoflop.crazypainting.network.c2s.SignPaintingC2S;
+import com.github.omoflop.crazypainting.network.c2s.handlers.RequestPaintingServerHandler;
 import com.github.omoflop.crazypainting.network.c2s.handlers.SignPaintingServerHandler;
+import com.github.omoflop.crazypainting.network.event.PaintingChangeEvent;
+import com.github.omoflop.crazypainting.network.event.ServerPaintingChangeEventHandler;
 import com.github.omoflop.crazypainting.network.s2c.PaintingCanUpdateS2C;
+import com.github.omoflop.crazypainting.network.s2c.PaintingUpdateS2C;
 import com.github.omoflop.crazypainting.network.s2c.UpdateEaselCanvasIdS2C;
 import com.github.omoflop.crazypainting.network.types.PaintingData;
 import com.github.omoflop.crazypainting.network.types.PaintingSize;
-import com.github.omoflop.crazypainting.network.event.PaintingChangeEvent;
-import com.github.omoflop.crazypainting.network.c2s.RequestPaintingC2S;
-import com.github.omoflop.crazypainting.network.event.ServerPaintingChangeEventHandler;
-import com.github.omoflop.crazypainting.network.c2s.handlers.RequestPaintingServerHandler;
-import com.github.omoflop.crazypainting.network.s2c.PaintingUpdateS2C;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -26,15 +27,15 @@ import java.nio.file.Path;
 public class CrazyNetworking {
     public static void register() {
         // Server -> Client
-        PayloadTypeRegistry.playS2C().register(PaintingChangeEvent.ID, PaintingChangeEvent.CODEC);
-        PayloadTypeRegistry.playS2C().register(PaintingUpdateS2C.ID, PaintingUpdateS2C.CODEC);
-        PayloadTypeRegistry.playS2C().register(PaintingCanUpdateS2C.ID, PaintingCanUpdateS2C.CODEC);
-        PayloadTypeRegistry.playS2C().register(UpdateEaselCanvasIdS2C.ID, UpdateEaselCanvasIdS2C.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(PaintingChangeEvent.ID, PaintingChangeEvent.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(PaintingUpdateS2C.ID, PaintingUpdateS2C.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(PaintingCanUpdateS2C.ID, PaintingCanUpdateS2C.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(UpdateEaselCanvasIdS2C.ID, UpdateEaselCanvasIdS2C.CODEC);
 
         // Client -> Server
-        PayloadTypeRegistry.playC2S().register(PaintingChangeEvent.ID, PaintingChangeEvent.CODEC);
-        PayloadTypeRegistry.playC2S().register(RequestPaintingC2S.ID, RequestPaintingC2S.CODEC);
-        PayloadTypeRegistry.playC2S().register(SignPaintingC2S.ID, SignPaintingC2S.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(PaintingChangeEvent.ID, PaintingChangeEvent.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(RequestPaintingC2S.ID, RequestPaintingC2S.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(SignPaintingC2S.ID, SignPaintingC2S.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(PaintingChangeEvent.ID, new ServerPaintingChangeEventHandler());
         ServerPlayNetworking.registerGlobalReceiver(RequestPaintingC2S.ID, new RequestPaintingServerHandler());

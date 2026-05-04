@@ -9,7 +9,7 @@ import com.github.omoflop.crazypainting.client.screens.editor.types.MouseListene
 import com.github.omoflop.crazypainting.client.screens.editor.types.Renderable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
@@ -26,8 +26,8 @@ public class BrushPickerWidget extends EditorWidget implements Renderable, Mouse
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
-        context.drawCenteredString(textRenderer, BRUSH_SETTINGS_TEXT, centerX(), top() - textRenderer.lineHeight, CrazyPainting.YELLOW);
+    public void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
+        context.centeredText(textRenderer, BRUSH_SETTINGS_TEXT, centerX(), top() - textRenderer.lineHeight, CrazyPainting.YELLOW);
 
         int i = 0;
         for (String category : BrushType.getCategories()) {
@@ -54,7 +54,7 @@ public class BrushPickerWidget extends EditorWidget implements Renderable, Mouse
         leftJustDown = false;
     }
 
-    private boolean drawBrushCategoryButton(GuiGraphics context, int mouseX, int mouseY, String category, int x, int y) {
+    private boolean drawBrushCategoryButton(GuiGraphicsExtractor context, int mouseX, int mouseY, String category, int x, int y) {
         Component text = Component.literal(category);
 
         int width = textRenderer.width(text);
@@ -69,12 +69,12 @@ public class BrushPickerWidget extends EditorWidget implements Renderable, Mouse
             textColor = CrazyPainting.LIME;
         }
 
-        context.drawString(textRenderer, text, x, y, textColor);
+        context.text(textRenderer, text, x, y, textColor);
 
         return mouseHovered;
     }
 
-    private boolean drawBrushSelectButton(GuiGraphics context, int mouseX, int mouseY, int x, int y, int width, int height, BrushType brush) {
+    private boolean drawBrushSelectButton(GuiGraphicsExtractor context, int mouseX, int mouseY, int x, int y, int width, int height, BrushType brush) {
         boolean mouseHovered = x <= mouseX && y <= mouseY && x+width > mouseX && y+height > mouseY;
 
         boolean selected = state.brushType == brush;

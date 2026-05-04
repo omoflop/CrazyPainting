@@ -4,12 +4,13 @@ import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.Identifiable;
 import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.content.CrazyItems;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings({"OptionalGetWithoutIsPresent", "NullPointerException"})
 public class PaletteItem extends Item implements Identifiable {
@@ -27,9 +28,9 @@ public class PaletteItem extends Item implements Identifiable {
 
     public static void addColor(ItemStack stack, int color) {
         if (!stack.hasNonDefault(CrazyComponents.PALETTE_COLORS)) return;
-        var component = stack.getComponentsPatch().get(CrazyComponents.PALETTE_COLORS);
+        var component = stack.get(CrazyComponents.PALETTE_COLORS);
 
-        List<Integer> colors = Objects.requireNonNull(component).get().colors();
+        List<Integer> colors = Objects.requireNonNull(component).colors();
         if (!colors.contains(color)) {
             colors.add(color);
         }
@@ -37,9 +38,9 @@ public class PaletteItem extends Item implements Identifiable {
 
     public static void removeColor(ItemStack stack, int color) {
         if (!stack.hasNonDefault(CrazyComponents.PALETTE_COLORS)) return;
-        var component = stack.getComponentsPatch().get(CrazyComponents.PALETTE_COLORS);
+        var component = stack.get(CrazyComponents.PALETTE_COLORS);
 
-        List<Integer> colors = Objects.requireNonNull(component).get().colors();
+        List<Integer> colors = Objects.requireNonNull(component).colors();
         if (colors.contains(color)) {
             colors.remove(color);
         }
@@ -47,9 +48,9 @@ public class PaletteItem extends Item implements Identifiable {
 
     public static void addColors(ItemStack stack, Iterable<Integer> iterable) {
         if (!stack.hasNonDefault(CrazyComponents.PALETTE_COLORS)) return;
-        var component = stack.getComponentsPatch().get(CrazyComponents.PALETTE_COLORS);
+        var component = stack.get(CrazyComponents.PALETTE_COLORS);
 
-        List<Integer> colors = Objects.requireNonNull(component).get().colors();
+        List<Integer> colors = Objects.requireNonNull(component).colors();
         for (Integer i : iterable) {
             if (!colors.contains(i)) {
                 colors.add(i);
@@ -67,17 +68,17 @@ public class PaletteItem extends Item implements Identifiable {
 
     public static boolean hasColor(ItemStack stack, int color) {
         if (!stack.hasNonDefault(CrazyComponents.PALETTE_COLORS)) return false;
-        var component = stack.getComponentsPatch().get(CrazyComponents.PALETTE_COLORS);
+        var component = stack.get(CrazyComponents.PALETTE_COLORS);
 
-        List<Integer> colors = Objects.requireNonNull(component).get().colors();
+        List<Integer> colors = Objects.requireNonNull(component).colors();
         return colors.contains(color);
     }
 
     public static boolean hasAnyColor(ItemStack stack, Iterable<Integer> iterable) {
         if (!stack.hasNonDefault(CrazyComponents.PALETTE_COLORS)) return false;
-        var component = stack.getComponentsPatch().get(CrazyComponents.PALETTE_COLORS);
+        var component = stack.get(CrazyComponents.PALETTE_COLORS);
 
-        List<Integer> colors = Objects.requireNonNull(component).get().colors();
+        List<Integer> colors = Objects.requireNonNull(component).colors();
         for (Integer i : iterable) {
             if (colors.contains(i)) return true;
         }
@@ -86,8 +87,8 @@ public class PaletteItem extends Item implements Identifiable {
 
     public static Collection<Integer> getColors(ItemStack stack) {
         if (!stack.hasNonDefault(CrazyComponents.PALETTE_COLORS)) return List.of();
-        var component = stack.getComponentsPatch().get(CrazyComponents.PALETTE_COLORS);
+        var component = stack.get(CrazyComponents.PALETTE_COLORS);
 
-        return List.copyOf(Objects.requireNonNull(component).get().colors());
+        return List.copyOf(Objects.requireNonNull(component).colors());
     }
 }

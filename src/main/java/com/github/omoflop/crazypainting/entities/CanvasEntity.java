@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class CanvasEntity extends HangingEntity {
@@ -48,7 +49,7 @@ public class CanvasEntity extends HangingEntity {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         if (getHeldItemStack().getItem() instanceof CanvasItem canvasItem) {
 
             if (canvasItem.width == canvasItem.height) {
@@ -58,7 +59,7 @@ public class CanvasEntity extends HangingEntity {
             }
             return InteractionResult.SUCCESS;
         }
-        return super.interact(player, hand);
+        return super.interact(player, hand, location);
     }
 
     @Override
@@ -142,16 +143,8 @@ public class CanvasEntity extends HangingEntity {
             value = value.copyWithCount(1);
         }
 
-        this.setAsStackHolder(value);
+	    this.recalculateBoundingBox();
         this.getEntityData().set(CANVAS_ITEM, value);
-    }
-
-    private void setAsStackHolder(ItemStack stack) {
-        if (!stack.isEmpty() && stack.getFrame() == null) {
-            stack.setEntityRepresentation(this);
-        }
-
-        this.recalculateBoundingBox();
     }
 
     public byte getItemRotation() {

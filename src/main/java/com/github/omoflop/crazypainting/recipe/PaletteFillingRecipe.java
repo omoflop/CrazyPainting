@@ -5,23 +5,24 @@ import com.github.omoflop.crazypainting.components.PaletteColorsComponent;
 import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.content.CrazyRecipes;
 import com.github.omoflop.crazypainting.items.PaletteItem;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-import net.minecraft.core.HolderLookup;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PaletteFillingRecipe extends CustomRecipe {
-    public PaletteFillingRecipe(CraftingBookCategory category) {
-        super(category);
-    }
+	public static final PaletteFillingRecipe INSTANCE = new PaletteFillingRecipe();
+	public static final MapCodec<PaletteFillingRecipe> MAP_CODEC = MapCodec.unit(INSTANCE);
+	public static final StreamCodec<RegistryFriendlyByteBuf, PaletteFillingRecipe> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
     @Override
     public boolean matches(CraftingInput input, Level world) {
@@ -40,7 +41,7 @@ public class PaletteFillingRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingInput input) {
         List<ItemStack> stacks = input.items();
 
         // Find the palette item

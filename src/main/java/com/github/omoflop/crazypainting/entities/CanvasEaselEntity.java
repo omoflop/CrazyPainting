@@ -28,11 +28,7 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -44,6 +40,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -72,7 +69,7 @@ public class CanvasEaselEntity extends LivingEntity {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         // Ignore offhand interactions
         if (hand == InteractionHand.OFF_HAND) return InteractionResult.PASS;
 
@@ -140,7 +137,7 @@ public class CanvasEaselEntity extends LivingEntity {
         }
 
 
-        return super.interact(player, hand);
+        return super.interact(player, hand, location);
     }
 
     private boolean checkInk(ItemStack playerHeldStack, ItemStack displayStack, Player player) {
@@ -349,14 +346,7 @@ public class CanvasEaselEntity extends LivingEntity {
     }
 
     public void setDisplayStack(ItemStack value) {
-        this.setAsStackHolder(value);
         this.getEntityData().set(CANVAS_ITEM, value);
-    }
-
-    private void setAsStackHolder(ItemStack stack) {
-        if (!stack.isEmpty() && stack.getFrame() == null) {
-            stack.setEntityRepresentation(this);
-        }
     }
 
     protected void addAdditionalSaveData(ValueOutput view) {

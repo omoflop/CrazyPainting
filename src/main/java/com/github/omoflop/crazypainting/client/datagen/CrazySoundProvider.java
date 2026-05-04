@@ -18,23 +18,23 @@ public class CrazySoundProvider extends FabricSoundsProvider {
     @Override
     protected void configure(HolderLookup.Provider wrapperLookup, SoundExporter sounds) {
         sounds.add(CrazySounds.BRUSH_USE, SoundTypeBuilder.of(CrazySounds.BRUSH_USE)
-                .category(SoundSource.UI)
-                .sound(SoundTypeBuilder.EntryBuilder.ofFile(CrazyPainting.id("brush0")))
-                .sound(SoundTypeBuilder.EntryBuilder.ofFile(CrazyPainting.id("brush1")))
-                .sound(SoundTypeBuilder.EntryBuilder.ofFile(CrazyPainting.id("brush2")))
-                .sound(SoundTypeBuilder.EntryBuilder.ofFile(CrazyPainting.id("brush3")))
-                .sound(SoundTypeBuilder.EntryBuilder.ofFile(CrazyPainting.id("brush4")))
-                .sound(SoundTypeBuilder.EntryBuilder.ofFile(CrazyPainting.id("brush5")))
+                .source(SoundSource.UI)
+                .sound(SoundTypeBuilder.RegistrationBuilder.ofFile(CrazyPainting.id("brush0")))
+                .sound(SoundTypeBuilder.RegistrationBuilder.ofFile(CrazyPainting.id("brush1")))
+                .sound(SoundTypeBuilder.RegistrationBuilder.ofFile(CrazyPainting.id("brush2")))
+                .sound(SoundTypeBuilder.RegistrationBuilder.ofFile(CrazyPainting.id("brush3")))
+                .sound(SoundTypeBuilder.RegistrationBuilder.ofFile(CrazyPainting.id("brush4")))
+                .sound(SoundTypeBuilder.RegistrationBuilder.ofFile(CrazyPainting.id("brush5")))
         );
 
         sounds.add(CrazySounds.COLOR_PICKER_USE, SoundTypeBuilder.of(CrazySounds.COLOR_PICKER_USE)
-                .category(SoundSource.UI)
-                .sound(SoundTypeBuilder.EntryBuilder.ofFile(CrazyPainting.id("pick_color")))
+                .source(SoundSource.UI)
+                .sound(SoundTypeBuilder.RegistrationBuilder.ofFile(CrazyPainting.id("pick_color")))
         );
 
         sounds.add(CrazySounds.UNDO, SoundTypeBuilder.of(CrazySounds.UNDO)
-                .category(SoundSource.UI)
-                .sound(SoundTypeBuilder.EntryBuilder.ofEvent(SoundEvents.ITEM_FRAME_REMOVE_ITEM))
+                .source(SoundSource.UI)
+                .sound(SoundTypeBuilder.RegistrationBuilder.ofEvent(SoundEvents.ITEM_FRAME_REMOVE_ITEM))
         );
     }
 

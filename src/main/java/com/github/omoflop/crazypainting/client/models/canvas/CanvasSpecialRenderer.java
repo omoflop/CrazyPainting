@@ -1,23 +1,18 @@
 package com.github.omoflop.crazypainting.client.models.canvas;
 
 import com.github.omoflop.crazypainting.CrazyPainting;
+import com.github.omoflop.crazypainting.client.CrazyPaintingClient;
 import com.github.omoflop.crazypainting.client.models.CanvasRenderer;
-import com.github.omoflop.crazypainting.components.CanvasDataComponent;
-import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.items.CanvasItem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3fc;
 
 import java.util.Optional;
@@ -29,7 +24,7 @@ public class CanvasSpecialRenderer implements SpecialModelRenderer<CanvasSpecial
 
 
     @Override
-    public void submit(@NotNull Data data, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, boolean bl, int k) {
+    public void submit(Data data, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, boolean bl, int k) {
         Optional<Identifier> textureId = CanvasRenderer.tryGetCanvasId(data.canvasId);
 
         if (textureId.isEmpty()) {
@@ -37,9 +32,9 @@ public class CanvasSpecialRenderer implements SpecialModelRenderer<CanvasSpecial
         }
 
         poseStack.pushPose();
-        boolean glow = displayContext == ItemDisplayContext.GUI || data.glow();
+        boolean glow = CrazyPaintingClient.displayContext == ItemDisplayContext.GUI || data.glow();
 
-        CanvasRenderer.prepareForItem(poseStack, displayContext == ItemDisplayContext.GUI, displayContext, data.width, data.height);
+        CanvasRenderer.prepareForItem(poseStack, CrazyPaintingClient.displayContext == ItemDisplayContext.GUI, CrazyPaintingClient.displayContext, data.width, data.height);
         submitNodeCollector.submitCustomGeometry(poseStack, CanvasRenderer.getRenderType(textureId.get(), glow), (pose, vertexConsumer) -> {
             CanvasRenderer.submitFront(vertexConsumer, pose, data.width, data.height, i);
         });
@@ -68,17 +63,17 @@ public class CanvasSpecialRenderer implements SpecialModelRenderer<CanvasSpecial
         public static final Data EMPTY = new Data(1, 1, -1, false);
     }
 
-    public record Unbaked() implements SpecialModelRenderer.Unbaked {
-        public static final MapCodec<CanvasSpecialRenderer.Unbaked> CODEC = MapCodec.unit(new CanvasSpecialRenderer.Unbaked());
+    public record Unbaked() implements SpecialModelRenderer.Unbaked<Data> {
+        public static final MapCodec<Unbaked> CODEC = MapCodec.unit(new CanvasSpecialRenderer.Unbaked());
 
 
         @Override
-        public SpecialModelRenderer<?> bake(BakingContext bakingContext) {
+        public SpecialModelRenderer<Data> bake(BakingContext bakingContext) {
             return new CanvasSpecialRenderer();
         }
 
         @Override
-        public MapCodec<? extends SpecialModelRenderer.Unbaked> type() {
+        public MapCodec<Unbaked> type() {
             return CODEC;
         }
     }

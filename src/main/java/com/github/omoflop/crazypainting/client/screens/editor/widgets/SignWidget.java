@@ -3,7 +3,7 @@ package com.github.omoflop.crazypainting.client.screens.editor.widgets;
 import com.github.omoflop.crazypainting.client.screens.editor.NetSync;
 import com.github.omoflop.crazypainting.client.screens.editor.types.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.CharacterEvent;
@@ -92,8 +92,8 @@ public class SignWidget extends EditorWidget implements KeyListener, MouseListen
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
-        button.render(context, mouseX, mouseY, deltaTicks);
-        textField.render(context, mouseX, mouseY, deltaTicks);
+    public void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
+        button.extractRenderState(context, mouseX, mouseY, deltaTicks);
+        textField.extractRenderState(context, mouseX, mouseY, deltaTicks);
     }
 }
