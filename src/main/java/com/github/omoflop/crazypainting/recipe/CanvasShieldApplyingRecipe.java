@@ -1,34 +1,30 @@
 package com.github.omoflop.crazypainting.recipe;
 
-import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.components.CanvasDataComponent;
-import com.github.omoflop.crazypainting.components.PaletteColorsComponent;
 import com.github.omoflop.crazypainting.content.CrazyComponents;
 import com.github.omoflop.crazypainting.content.CrazyRecipes;
 import com.github.omoflop.crazypainting.items.CanvasItem;
-import com.github.omoflop.crazypainting.items.PaletteItem;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
+import java.util.Optional;
+
 public class CanvasShieldApplyingRecipe extends CustomRecipe {
-    public CanvasShieldApplyingRecipe(CraftingBookCategory category) {
-        super(category);
-    }
+	public static final CanvasShieldApplyingRecipe INSTANCE = new CanvasShieldApplyingRecipe();
+	public static final MapCodec<CanvasShieldApplyingRecipe> MAP_CODEC = MapCodec.unit(INSTANCE);
+	public static final StreamCodec<RegistryFriendlyByteBuf, CanvasShieldApplyingRecipe> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
     @Override
     public boolean matches(CraftingInput input, Level world) {
@@ -36,7 +32,7 @@ public class CanvasShieldApplyingRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingInput input) {
         Match match = findMatch(input).orElseThrow();
         CanvasDataComponent canvasData = match.canvas.get(CrazyComponents.CANVAS_DATA);
 

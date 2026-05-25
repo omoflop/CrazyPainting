@@ -13,6 +13,7 @@
     "requireAnnotations": true
   },
   "client": [
+    "client.ItemStackRenderStateMixin",
     "client.MinecraftClientMixin",
     "client.ShieldModelRendererMixin",
     "client.SpecialItemModelMixin",

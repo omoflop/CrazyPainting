@@ -2,7 +2,7 @@ package com.github.omoflop.crazypainting.client.datagen;
 
 import com.github.omoflop.crazypainting.content.CrazyItems;
 import com.github.omoflop.crazypainting.items.CanvasItem;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeCategory;
@@ -11,11 +11,12 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
+
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public class CrazyRecipeProvider extends FabricRecipeProvider {
-    public CrazyRecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+    public CrazyRecipeProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 

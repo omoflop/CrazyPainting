@@ -3,7 +3,7 @@ package com.github.omoflop.crazypainting.content;
 import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.components.CanvasDataComponent;
 import com.github.omoflop.crazypainting.components.PaletteColorsComponent;
-import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
+import net.fabricmc.fabric.api.item.v1.ItemComponentTooltipProviderRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -22,7 +22,7 @@ public class CrazyComponents {
     );
 
     public static void register() {
-        ComponentTooltipAppenderRegistry.addBefore(DataComponents.LORE, CANVAS_DATA);
-        ComponentTooltipAppenderRegistry.addAfter(DataComponents.ATTRIBUTE_MODIFIERS, PALETTE_COLORS);
+        ItemComponentTooltipProviderRegistry.addBefore(DataComponents.LORE, CANVAS_DATA);
+	    ItemComponentTooltipProviderRegistry.addAfter(DataComponents.ATTRIBUTE_MODIFIERS, PALETTE_COLORS);
     }
 }

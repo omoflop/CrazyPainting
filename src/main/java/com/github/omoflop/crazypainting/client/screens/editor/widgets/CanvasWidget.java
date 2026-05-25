@@ -6,15 +6,15 @@ import com.github.omoflop.crazypainting.client.CrazyPaintingClient;
 import com.github.omoflop.crazypainting.client.screens.editor.types.*;
 import com.github.omoflop.crazypainting.client.texture.CanvasTexture;
 import com.github.omoflop.crazypainting.content.CrazySounds;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderPipelines;
 
 import static com.github.omoflop.crazypainting.client.screens.PaintingEditorScreen.EDITOR_TEXTURE_ID;
 
@@ -42,7 +42,7 @@ public class CanvasWidget extends EditorWidget implements Renderable, MouseListe
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
         Renderable.drawBorder(context, x-1, y-1, width+2, height+2, CrazyPainting.BLACK);
         context.enableScissor(x, y, right(), bottom());
         for(int i = 0; i < texture.pixels.length; i++) {

@@ -6,7 +6,7 @@ import com.github.omoflop.crazypainting.components.PaletteColorsComponent;
 import com.github.omoflop.crazypainting.items.CanvasItem;
 import com.github.omoflop.crazypainting.items.EaselItem;
 import com.github.omoflop.crazypainting.items.PaletteItem;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -15,7 +15,10 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CrazyItems {
     public static final List<CanvasItem> allCanvases = new ArrayList<>();
@@ -39,7 +42,7 @@ public class CrazyItems {
         deferredRegistry.clear();
         deferredRegistry = null;
 
-        CreativeModeTab group = FabricItemGroup.builder()
+        CreativeModeTab tab = FabricCreativeModeTab.builder()
                 .icon(PaletteItem::createFullPalette)
                 .title(Component.nullToEmpty("Crazy Painting"))
                 .displayItems(((displayContext, entries) -> {
@@ -53,7 +56,7 @@ public class CrazyItems {
                     }
                 }))
                 .build();
-        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CrazyPainting.id("main"), group);
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CrazyPainting.id("main"), tab);
     }
 
     private static <T extends Item & Identifiable> T register(T item) {

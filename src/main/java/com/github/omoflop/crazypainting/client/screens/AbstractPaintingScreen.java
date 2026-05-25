@@ -2,15 +2,15 @@ package com.github.omoflop.crazypainting.client.screens;
 
 import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.client.screens.editor.types.*;
-import java.util.ArrayList;
-import java.util.List;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractPaintingScreen extends Screen {
     private final List<EditorWidget> widgets = new ArrayList<>();
@@ -62,14 +62,14 @@ public abstract class AbstractPaintingScreen extends Screen {
     //============ Lifetime events ============//
     //============-----------------============//
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
         if (evilHack > 0) {
             recalculateWidgetPositions(width, height);
             evilHack -= 1;
         }
         for (Renderable r : renderables) r.render(context, mouseX, mouseY, deltaTicks);
 
-        super.render(context, mouseX, mouseY, deltaTicks);
+        super.extractRenderState(context, mouseX, mouseY, deltaTicks);
         if (drawDebugBoundaries) {
             for (EditorWidget widget : widgets) {
                 Renderable.drawBorder(context, widget.x, widget.y, widget.width, widget.height, CrazyPainting.YELLOW);

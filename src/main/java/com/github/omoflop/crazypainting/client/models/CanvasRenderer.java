@@ -7,18 +7,18 @@ import com.github.omoflop.crazypainting.client.texture.CanvasTextureManager;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemDisplayContext;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.util.Optional;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.ItemDisplayContext;
 
 public final class CanvasRenderer {
 
@@ -72,7 +72,7 @@ public final class CanvasRenderer {
                 return (RenderTypes.beaconBeam(textureId, true));
             }
         } else {
-            return (RenderTypes.itemEntityTranslucentCull(textureId));
+            return (RenderTypes.entityTranslucentCullItemTarget(textureId));
         }
     }
 
@@ -141,7 +141,6 @@ public final class CanvasRenderer {
     }
 
     public static void prepareForShield(PoseStack matrices) {
-        matrices.mulPose(Axis.XP.rotationDegrees(180));
         matrices.scale(1/32f, 1/32f, 1/32f);
         matrices.translate(-10, -20, -2.5f);
         matrices.scale(1.25f, 1.25f, 1.25f);

@@ -3,10 +3,13 @@ package com.github.omoflop.crazypainting.state;
 import com.github.omoflop.crazypainting.CrazyPainting;
 import com.github.omoflop.crazypainting.network.ChangeRecord;
 import com.github.omoflop.crazypainting.network.s2c.PaintingCanUpdateS2C;
-import com.github.omoflop.crazypainting.network.types.*;
+import com.github.omoflop.crazypainting.network.types.PaintingData;
+import com.github.omoflop.crazypainting.network.types.PaintingId;
+import com.github.omoflop.crazypainting.network.types.PaintingSize;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -30,7 +33,7 @@ public class CanvasManager extends SavedData {
     ).apply(builder, CanvasManager::new));
 
     private static final String OLD_ID = "crazypainting:canvas_manager";
-    private static final String ID = "crazypainting_canvas_manager";
+    private static final Identifier ID = Identifier.tryParse(OLD_ID);
 
     public static final HashMap<UUID, ChangeRecord> CHANGE_IDS = new HashMap<>();
 
@@ -65,7 +68,7 @@ public class CanvasManager extends SavedData {
                     CrazyPainting.LOGGER.info("Successfully migrated CanvasManager dat to new filename");
                 } catch (IOException e) {
                     CrazyPainting.LOGGER.error("Failed to migrate CanvasManager dat file, sticking with old one", e);
-                    type = new SavedDataType<>(OLD_ID, CanvasManager::createNew, CODEC, null);
+                    type = new SavedDataType<>(ID, CanvasManager::createNew, CODEC, null);
                 }
             }
         }

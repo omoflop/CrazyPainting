@@ -1,21 +1,21 @@
 package com.github.omoflop.crazypainting.client.screens;
 
 import com.github.omoflop.crazypainting.CrazyPainting;
-import com.github.omoflop.crazypainting.client.screens.editor.widgets.*;
 import com.github.omoflop.crazypainting.client.screens.editor.NetSync;
 import com.github.omoflop.crazypainting.client.screens.editor.types.EditorState;
+import com.github.omoflop.crazypainting.client.screens.editor.widgets.*;
 import com.github.omoflop.crazypainting.client.texture.CanvasTexture;
 import com.github.omoflop.crazypainting.items.PaletteItem;
 import com.github.omoflop.crazypainting.network.event.PaintingChangeEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -96,11 +96,6 @@ public class PaintingEditorScreen extends AbstractPaintingScreen {
         sign.height = 30;
         sign.alignXCenter(width);
         sign.y = canvasWidget.bottom() + 2;
-    }
-
-    @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
-        super.render(context, mouseX, mouseY, deltaTicks);
     }
 
     @Override

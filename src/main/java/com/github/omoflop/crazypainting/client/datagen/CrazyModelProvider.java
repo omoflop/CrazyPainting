@@ -6,8 +6,7 @@ import com.github.omoflop.crazypainting.content.CrazyItems;
 import com.github.omoflop.crazypainting.items.CanvasItem;
 import com.github.omoflop.crazypainting.items.PaletteItem;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.minecraft.client.data.*;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.model.ItemModelUtils;
@@ -21,9 +20,11 @@ import net.minecraft.client.renderer.item.properties.select.DisplayContext;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 
+import java.util.Optional;
+
 public class CrazyModelProvider extends FabricModelProvider {
 
-    public CrazyModelProvider(FabricDataOutput output) {
+    public CrazyModelProvider(FabricPackOutput output) {
         super(output);
     }
 
@@ -52,7 +53,7 @@ public class CrazyModelProvider extends FabricModelProvider {
         ItemModel.Unbaked paintedModelWithCondition = ItemModelUtils.select(new DisplayContext(), specialModel, ItemModelUtils.when(ItemDisplayContext.GROUND, paintedModel));
 
         // Create the item asset
-        ConditionalItemModel.Unbaked canvasModel = new ConditionalItemModel.Unbaked(new HasComponent(CrazyComponents.CANVAS_DATA, false), paintedModelWithCondition, emptyModel);
+        ConditionalItemModel.Unbaked canvasModel = new ConditionalItemModel.Unbaked(Optional.empty(), new HasComponent(CrazyComponents.CANVAS_DATA, false), paintedModelWithCondition, emptyModel);
         ClientItem asset = new ClientItem(canvasModel, new ClientItem.Properties(true, true, 1));
         gen.itemModelOutput.accept(item, asset.model());
         gen.createFlatItemModel(item, "", ModelTemplates.FLAT_ITEM);
