@@ -204,19 +204,19 @@ public class CanvasEaselEntity extends LivingEntity {
 
     public boolean hurtServer(ServerLevel world, DamageSource source, float amount) {
         if (source.isCreativePlayer()) {
-            this.breakAndDropItem(world, source, true);
+            this.breakAndDropItem(world, source);
             this.remove(RemovalReason.KILLED);
         } else if (this.isRemoved()) {
             return false;
         } else if (!world.getGameRules().get(GameRules.MOB_GRIEFING) && source.getEntity() instanceof Mob) {
             return false;
         } else if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-            this.breakAndDropItem(world, source, true);
+            this.breakAndDropItem(world, source);
             this.remove(RemovalReason.KILLED);
             return false;
         } else if (!this.isInvulnerableTo(world, source)) {
             if (source.is(DamageTypeTags.IS_EXPLOSION)) {
-                this.breakAndDropItem(world, source, false);
+                this.breakAndDropItem(world, source);
                 this.remove(RemovalReason.KILLED);
                 return false;
             } else if (source.is(DamageTypeTags.IGNITES_ARMOR_STANDS)) {
@@ -255,7 +255,7 @@ public class CanvasEaselEntity extends LivingEntity {
                             this.gameEvent(GameEvent.ENTITY_DAMAGE, source.getEntity());
                             this.lastHitTime = l;
                         } else {
-                            this.breakAndDropItem(world, source, false);
+                            this.breakAndDropItem(world, source);
                             this.spawnBreakParticles();
                             this.remove(RemovalReason.KILLED);
                         }
@@ -302,7 +302,7 @@ public class CanvasEaselEntity extends LivingEntity {
         float f = this.getHealth();
         f -= amount;
         if (f <= 0.5F) {
-            breakAndDropItem(world, damageSource, false);
+            //breakAndDropItem(world, damageSource);
             this.kill(world);
         } else {
             this.setHealth(f);
@@ -311,10 +311,11 @@ public class CanvasEaselEntity extends LivingEntity {
 
     }
 
-    private void breakAndDropItem(ServerLevel world, DamageSource damageSource, boolean isCreative) {
-        if (!isCreative) {
+    private void breakAndDropItem(ServerLevel world, DamageSource damageSource) {
+        if (!damageSource.isCreativePlayer()) {
             Block.popResource(this.level(), this.blockPosition(), getEaselItemStack());
         }
+        System.out.println("Dropping item from easel");
         Block.popResource(this.level(), this.blockPosition(), getDisplayStack());
         this.onBreak(world, damageSource);
     }
@@ -327,7 +328,7 @@ public class CanvasEaselEntity extends LivingEntity {
 
     private void onBreak(ServerLevel world, DamageSource damageSource) {
         this.playBreakSound();
-        this.dropAllDeathLoot(world, damageSource);
+        //this.dropAllDeathLoot(world, damageSource);
     }
 
     @Override
