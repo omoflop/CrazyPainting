@@ -11,6 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -33,7 +34,9 @@ public class CanvasManager extends SavedData {
     ).apply(builder, CanvasManager::new));
 
     private static final String OLD_ID = "crazypainting:canvas_manager";
-    private static final Identifier ID = Identifier.tryParse(OLD_ID);
+
+    private static final SavedDataType<CanvasManager> TYPE = new SavedDataType<>(CrazyPainting.id("canvas_manager"), CanvasManager::createNew, CODEC, null);
+
 
     public static final HashMap<UUID, ChangeRecord> CHANGE_IDS = new HashMap<>();
 
@@ -49,12 +52,14 @@ public class CanvasManager extends SavedData {
 
     public int getNextId() {
         nextId += 1;
+        setDirty();
         return nextId;
     }
 
     public static CanvasManager getServerState(MinecraftServer server) {
-        SavedDataType<CanvasManager> type = new SavedDataType<>(ID, CanvasManager::createNew, CODEC, null);
 
+        // Henry, thank you for the migration code!! ...But I have no idea how Minecraft's new system works now, so I'm gonna remove it for now...
+        /*
         // Migrate old CanvasManager dat file
         {
             Path dataDir = server.getWorldPath(LevelResource.ROOT).resolve("data");
@@ -72,10 +77,14 @@ public class CanvasManager extends SavedData {
                 }
             }
         }
+        */
 
-        CanvasManager canvasManager = Objects.requireNonNull(server.getLevel(Level.OVERWORLD)).getDataStorage().computeIfAbsent(type);
-        canvasManager.setDirty();
-        return canvasManager;
+        ServerLevel level = server.getLevel(ServerLevel.OVERWORLD);
+        if (level == null) {
+            return createNew();
+        }
+
+        return level.getDataStorage().computeIfAbsent(TYPE);
     }
 
     public static PaintingData createOrLoad(int canvasId, PaintingSize size, MinecraftServer server) throws IOException {

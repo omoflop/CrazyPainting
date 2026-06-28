@@ -29,7 +29,6 @@ dependencies {
 
     include implementation('me.saharnooby:qoi-java:1.2.1')
     include implementation('me.saharnooby:qoi-java-awt:1.2.1')
-
 }
 
 processResources {
